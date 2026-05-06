@@ -1,0 +1,3341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cozy Animal Kitchen</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Patrick+Hand&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: background 0.5s ease;
+    }
+
+    .restaurant-bg {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .restaurant-bg-wall {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, #f0a078 0%, #e87850 40%, #e06840 100%);
+    }
+
+    .restaurant-bg-wall::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255, 255, 255, 0.35), transparent 65%);
+      pointer-events: none;
+    }
+
+    .restaurant-bg-baseboard {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 72px;
+      background: linear-gradient(180deg, #c85830 0%, #b84820 50%, #a83818 100%);
+      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .restaurant-bg-floor {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 72px;
+      height: 120px;
+      background: linear-gradient(180deg, #e88858 0%, #d86038 50%, #c85028 100%);
+    }
+
+    .restaurant-bg-floor::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        90deg,
+        transparent 0px,
+        transparent 48px,
+        rgba(255, 255, 255, 0.12) 48px,
+        rgba(255, 255, 255, 0.12) 50px
+      );
+      pointer-events: none;
+    }
+
+    body.sleepy .restaurant-bg-wall {
+      background: linear-gradient(180deg, #e87850 0%, #d86038 50%, #c85028 100%);
+    }
+
+    body.sleepy .restaurant-bg-wall::before {
+      background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(255, 255, 255, 0.2), transparent 65%);
+    }
+
+    .restaurant-table {
+      position: absolute;
+      bottom: 0;
+      width: 320px;
+      height: 28px;
+      background: #a05028;
+      border-radius: 5px;
+      box-shadow: 0 5px 14px rgba(0, 0, 0, 0.25);
+    }
+
+    .restaurant-table-leg {
+      position: absolute;
+      bottom: -68px;
+      width: 14px;
+      height: 68px;
+      background: #8a4018;
+      border-radius: 3px;
+    }
+
+    .restaurant-table-leg.left {
+      left: 28px;
+    }
+
+    .restaurant-table-leg.right {
+      right: 28px;
+      left: auto;
+    }
+
+    .restaurant-chair {
+      position: absolute;
+      width: 72px;
+      height: 22px;
+      background: #a85830;
+      border-radius: 4px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Chair back: vertical part at the BACK of the seat */
+    .restaurant-chair::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 16px;
+      height: 56px;
+      background: #985020;
+      border-radius: 3px 3px 0 0;
+      transform-origin: bottom right;
+      transform: translateY(-100%);
+    }
+
+    /* Chair legs – two vertical bars under the seat, long enough to meet the floor */
+    .restaurant-chair-leg {
+      position: absolute;
+      bottom: -70px;
+      width: 10px;
+      height: 70px;
+      background: #8a4018;
+      border-radius: 2px;
+    }
+
+    .restaurant-chair-leg.left {
+      left: 6px;
+    }
+
+    .restaurant-chair-leg.right {
+      right: 6px;
+      left: auto;
+    }
+
+    .bg-cupboard {
+      position: fixed;
+      left: 1.5%;
+      bottom: 200px;
+      width: 165px;
+      height: 320px;
+      background: linear-gradient(180deg, #7a5a34 0%, #5a4020 25%, #4a3018 100%);
+      border: 5px solid #3a2812;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.08);
+      z-index: 10;
+      padding: 14px 10px;
+    }
+    .bg-cupboard::before {
+      content: "Ingredients";
+      position: absolute;
+      top: 8px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.85);
+      letter-spacing: 0.04em;
+      font-weight: 600;
+    }
+    .bg-cupboard-shelf {
+      position: absolute;
+      left: 6px;
+      right: 6px;
+      height: 5px;
+      background: linear-gradient(180deg, #4a3018 0%, #3a2812 100%);
+      border-radius: 2px;
+    }
+    .bg-cupboard-shelf:nth-of-type(1) { top: 36px; }
+    .bg-cupboard-shelf:nth-of-type(2) { top: 108px; }
+    .bg-cupboard-shelf:nth-of-type(3) { top: 180px; }
+    .bg-cupboard-shelf:nth-of-type(4) { bottom: 36px; }
+    .bg-cupboard-items {
+      position: absolute;
+      top: 44px;
+      left: 8px;
+      right: 8px;
+      bottom: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-content: flex-start;
+      justify-content: center;
+    }
+    .bg-cupboard-item-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 40px;
+      flex-shrink: 0;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .bg-cupboard-item {
+      position: relative;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+    }
+    /* Milk bottle */
+    .bg-cupboard-item.milk {
+      width: 18px;
+      height: 38px;
+      border-radius: 4px 4px 12px 12px;
+      background: linear-gradient(90deg, #e0d8c8 0%, #f8f4e8 30%, #e8e0d0 70%, #d8d0c0 100%);
+      border: 1px solid rgba(200,190,170,0.8);
+    }
+    .bg-cupboard-item.milk::before {
+      content: "";
+      position: absolute;
+      top: -4px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 8px;
+      height: 6px;
+      background: linear-gradient(90deg, #e8e4dc, #f0ece4);
+      border-radius: 2px 2px 0 0;
+      border: 1px solid rgba(200,190,170,0.6);
+    }
+    /* Water bottle */
+    .bg-cupboard-item.water {
+      width: 18px;
+      height: 38px;
+      border-radius: 4px 4px 12px 12px;
+      background: linear-gradient(90deg, #a0c8e0 0%, #c8e0f0 40%, #b0d4e8 70%, #90b8d8 100%);
+      border: 1px solid rgba(140,180,210,0.8);
+    }
+    .bg-cupboard-item.water::before {
+      content: "";
+      position: absolute;
+      top: -4px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 8px;
+      height: 6px;
+      background: linear-gradient(90deg, #b0d0e8, #c8e4f4);
+      border-radius: 2px 2px 0 0;
+      border: 1px solid rgba(140,180,210,0.6);
+    }
+    /* Honey jar */
+    .bg-cupboard-item.honey {
+      width: 24px;
+      height: 28px;
+      border-radius: 50% 50% 45% 45%;
+      background: linear-gradient(135deg, #e8c040 0%, #d4a830 40%, #c8a030 100%);
+      border: 1px solid rgba(180,140,40,0.6);
+    }
+    .bg-cupboard-item.honey::after {
+      content: "";
+      position: absolute;
+      top: -2px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 4px;
+      background: linear-gradient(180deg, #c8a040, #a07820);
+      border-radius: 2px;
+    }
+    /* Cocoa tin */
+    .bg-cupboard-item.cocoa {
+      width: 22px;
+      height: 28px;
+      border-radius: 3px;
+      background: linear-gradient(180deg, #6a4830 0%, #5a3828 30%, #4a2818 100%);
+      border: 1px solid #3a2010;
+    }
+    .bg-cupboard-item.cocoa::before {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 4px;
+      right: 4px;
+      height: 4px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 2px;
+    }
+    /* Tea box */
+    .bg-cupboard-item.tea {
+      width: 20px;
+      height: 32px;
+      border-radius: 2px 2px 8px 8px;
+      background: linear-gradient(180deg, #b8c898 0%, #a8b888 50%, #8a9a70 100%);
+      border: 1px solid rgba(100,110,80,0.6);
+    }
+    /* Oats container */
+    .bg-cupboard-item.oats {
+      width: 26px;
+      height: 30px;
+      border-radius: 8px 8px 12px 12px;
+      background: linear-gradient(180deg, #e0d0a8 0%, #d8c898 40%, #c4a878 100%);
+      border: 1px solid rgba(180,160,120,0.7);
+    }
+    /* Herbs jar */
+    .bg-cupboard-item.herbs {
+      width: 22px;
+      height: 30px;
+      border-radius: 45% 45% 50% 50%;
+      background: linear-gradient(180deg, #7aa058 0%, #6a9050 50%, #4a7030 100%);
+      border: 1px solid rgba(60,90,40,0.6);
+    }
+    .bg-cupboard-item.herbs::after {
+      content: "";
+      position: absolute;
+      top: -1px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 16px;
+      height: 3px;
+      background: #5a8040;
+      border-radius: 1px;
+    }
+    /* Cheese wedge */
+    .bg-cupboard-item.cheese {
+      width: 28px;
+      height: 24px;
+      background: linear-gradient(135deg, #f0e090 0%, #e8d878 50%, #d8c050 100%);
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 20% 100%);
+      border: none;
+      border-radius: 0;
+    }
+    .bg-cupboard-item.cheese::before {
+      content: "";
+      position: absolute;
+      top: 4px;
+      left: 6px;
+      width: 8px;
+      height: 6px;
+      background: rgba(255,255,255,0.4);
+      border-radius: 50%;
+    }
+    .bg-cupboard-item-label {
+      font-size: 11px;
+      line-height: 1.15;
+      color: #fff;
+      text-align: center;
+      margin-top: 4px;
+      font-weight: 700;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.6), 0 0 1px rgba(0,0,0,0.8);
+      pointer-events: none;
+    }
+
+    .player-position-wrap {
+      position: fixed;
+      bottom: 24px;
+      left: 0;
+      right: 0;
+      z-index: 15;
+      pointer-events: none;
+    }
+    .player-position-spot {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: left 0.25s ease, transform 0.25s ease;
+      transform: translateX(-50%);
+    }
+    /* Cupboard is at left 1.5%, width 165px — center arrow under it */
+    .player-position-spot.at-cupboard {
+      left: calc(1.5% + 82px);
+      transform: translateX(-50%);
+    }
+    .player-position-spot.at-table {
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .player-position-figure {
+      width: 48px;
+      height: 64px;
+      margin-bottom: 4px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    }
+    .player-position-figure svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    .player-position-label {
+      font-family: "Patrick Hand", cursive;
+      font-size: 0.85rem;
+      color: #5a4030;
+    }
+    .player-holding-wrap {
+      position: fixed;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 15;
+      pointer-events: none;
+      font-family: "Patrick Hand", cursive;
+      font-size: 1rem;
+      color: #5a4030;
+      background: rgba(255,248,240,0.95);
+      padding: 6px 14px;
+      border-radius: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .player-holding-wrap.visible { opacity: 1; }
+    .player-keys-hint {
+      position: fixed;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 14;
+      font-family: "Patrick Hand", cursive;
+      font-size: 0.75rem;
+      color: rgba(90,64,48,0.7);
+    }
+
+    .restaurant-furniture-left {
+      position: absolute;
+      left: 4%;
+      bottom: 72px;
+      z-index: 0;
+      width: 480px;
+      min-height: 180px;
+      overflow: visible;
+    }
+
+    .restaurant-furniture-left .restaurant-table {
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+    }
+
+    .restaurant-furniture-left .restaurant-chair {
+      bottom: 4px;
+    }
+
+    /* Chair with back on the LEFT = person faces right (toward table) */
+    .restaurant-chair.back-left::before {
+      right: auto;
+      left: 0;
+      transform: translateY(-100%);
+    }
+
+    /* Chair on left side of table: back faces left, seat faces table */
+    .restaurant-furniture-left .restaurant-chair:nth-child(1) {
+      left: 0;
+      bottom: 70px;
+      transform: rotate(-8deg);
+    }
+
+    /* Chair on right side of table: back faces right, seat faces table */
+    .restaurant-furniture-left .restaurant-chair:nth-child(2) {
+      right: 0;
+      left: auto;
+      bottom: 70px;
+      transform: rotate(8deg);
+    }
+
+    .restaurant-furniture-right {
+      position: absolute;
+      right: 4%;
+      bottom: 72px;
+      z-index: 0;
+      width: 480px;
+      min-height: 180px;
+      overflow: visible;
+    }
+
+    .restaurant-furniture-right .restaurant-table {
+      right: 50%;
+      left: auto;
+      bottom: 0;
+      transform: translateX(50%);
+    }
+
+    .restaurant-furniture-right .restaurant-chair {
+      bottom: 4px;
+    }
+
+    .restaurant-furniture-right .restaurant-chair:nth-child(1) {
+      left: 0;
+      bottom: 70px;
+      transform: rotate(-8deg);
+    }
+
+    .restaurant-furniture-right .restaurant-chair:nth-child(2) {
+      right: 0;
+      left: auto;
+      bottom: 70px;
+      transform: rotate(8deg);
+    }
+
+    .game {
+      position: relative;
+      background: linear-gradient(180deg, #faf0e6 0%, #f5e4d8 50%, #f0dcc8 100%);
+      border: 1px solid rgba(200, 160, 120, 0.4);
+      border-radius: 20px;
+      padding: 16px 20px 32px;
+      max-width: 480px;
+      min-width: 320px;
+      width: 100%;
+      box-sizing: border-box;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+      overflow: visible;
+    }
+
+    .recipe-book-btn {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      border: 1px solid #e0ccbc;
+      background: linear-gradient(135deg, #f8ede4 0%, #f0e0d4 100%);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: box-shadow 0.2s ease;
+      z-index: 10;
+      animation: bookBob 2.5s ease-in-out infinite;
+    }
+
+    .recipe-book-btn:hover {
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.14);
+    }
+
+    .recipe-book-btn:active {
+      animation: none;
+      transform: none;
+    }
+
+    .recipe-book-btn svg {
+      width: 26px;
+      height: 26px;
+    }
+
+    @keyframes bookBob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    .recipe-book-panel {
+      position: fixed;
+      bottom: 84px;
+      left: 24px;
+      width: 300px;
+      max-height: 70vh;
+      padding: 0;
+      border-radius: 4px;
+      background: linear-gradient(180deg, #f4ebdc 0%, #e8dcc8 8%, #e2d4b8 50%, #dcc8a8 100%);
+      border: 1px solid #c4a878;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -1px 0 rgba(0,0,0,0.05);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(12px) scale(0.96);
+      transition: opacity 0.25s ease, visibility 0.25s ease, transform 0.25s ease;
+      z-index: 10;
+      overflow: hidden;
+      font-family: "Caveat", "Patrick Hand", cursive;
+    }
+
+    .recipe-book-panel.open {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+    }
+
+    .recipe-script-header {
+      text-align: center;
+      padding: 14px 16px 10px;
+      border-bottom: 2px solid #b89868;
+      background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 100%);
+    }
+
+    .recipe-script-title {
+      font-family: "Caveat", cursive;
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: #5a4428;
+      margin: 0;
+      letter-spacing: 0.02em;
+    }
+
+    .recipe-script-sub {
+      font-family: "Patrick Hand", cursive;
+      font-size: 0.75rem;
+      color: #7a6348;
+      margin: 4px 0 0;
+    }
+
+    .recipe-script-body {
+      padding: 12px 18px 18px;
+      overflow-y: auto;
+      max-height: calc(70vh - 80px);
+    }
+
+    .recipe-script-body .recipe-book {
+      display: block;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1px dashed #c4a878;
+    }
+
+    .recipe-script-body .recipe-book:last-of-type {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .recipe-script-body .recipe-book.current-recipe {
+      background: rgba(200, 160, 100, 0.12);
+      margin: 0 -10px 18px;
+      padding: 10px 10px 14px;
+      border-radius: 6px;
+      border-bottom: 1px dashed #c4a878;
+    }
+
+    .recipe-book-title {
+      font-family: "Caveat", cursive;
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: #5a4428;
+      margin-bottom: 6px;
+      padding-bottom: 4px;
+      border-bottom: none;
+    }
+    .recipe-difficulty {
+      font-family: "Patrick Hand", cursive;
+      font-size: 0.75rem;
+      font-weight: normal;
+      color: #9a6a4a;
+    }
+
+    .recipe-book-steps {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      font-size: 0.95rem;
+      color: #5a4a38;
+      line-height: 1.7;
+      font-family: "Patrick Hand", cursive;
+    }
+
+    .recipe-book-steps li {
+      padding-left: 1.4em;
+      position: relative;
+    }
+
+    .recipe-book-steps li::before {
+      content: "◦";
+      position: absolute;
+      left: 0;
+      color: #a08050;
+    }
+
+    .recipe-book-steps li.done {
+      color: #8a7a62;
+      text-decoration: line-through;
+    }
+
+    .recipe-book-2, .recipe-book-3, .recipe-book-4 {
+      margin-top: 0;
+      padding-top: 0;
+      border-top: none;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      text-align: center;
+      font-size: 1.5rem;
+      color: #5a3b29;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #8a6a52;
+      margin-bottom: 16px;
+    }
+
+    .bear-photo {
+      display: block;
+      width: 100%;
+      max-width: 400px;
+      min-height: 200px;
+      height: auto;
+      margin: 16px auto;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      border: 4px solid #c4a878;
+      background: #e8dcc8;
+      object-fit: cover;
+    }
+    .bear-photo-fallback {
+      min-height: 200px;
+      margin: 16px auto;
+      border-radius: 16px;
+      border: 4px solid #c4a878;
+      background: #e8dcc8;
+      max-width: 400px;
+    }
+
+    .restaurant-name-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      font-family: "Patrick Hand", cursive;
+    }
+    .restaurant-name-overlay.hidden { display: none; }
+    .restaurant-name-box {
+      background: linear-gradient(180deg, #faf0e6 0%, #f0e4d8 100%);
+      border-radius: 16px;
+      padding: 28px 32px;
+      max-width: 360px;
+      width: 90%;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+      border: 2px solid #d4c0a8;
+      text-align: center;
+    }
+    .restaurant-name-box h2 {
+      margin: 0 0 12px;
+      font-size: 1.4rem;
+      color: #5a3b29;
+    }
+    .restaurant-name-box p {
+      margin: 0 0 16px;
+      font-size: 0.95rem;
+      color: #6a5240;
+    }
+    .restaurant-name-box input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px 14px;
+      font-family: "Patrick Hand", cursive;
+      font-size: 1.1rem;
+      border: 2px solid #c8b098;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      color: #4a3828;
+    }
+    .restaurant-name-box input:focus {
+      outline: none;
+      border-color: #8a6a52;
+    }
+    .restaurant-name-box input::placeholder {
+      color: #a09080;
+    }
+    .restaurant-name-box button {
+      font-family: "Patrick Hand", cursive;
+      font-size: 1.1rem;
+      padding: 10px 24px;
+      background: linear-gradient(180deg, #a08050 0%, #8a6840 100%);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .restaurant-name-box button:hover {
+      background: linear-gradient(180deg, #b09060 0%, #9a7850 100%);
+    }
+
+    .restaurant-name-corner {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      z-index: 12;
+      font-family: "Patrick Hand", cursive;
+      font-size: 1rem;
+      color: #5a3b29;
+      background: rgba(255,248,240,0.92);
+      padding: 8px 14px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+      border: 1px solid #d4c0a8;
+      cursor: pointer;
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .restaurant-name-corner:hover {
+      background: rgba(255,252,245,0.98);
+      border-color: #a08050;
+    }
+    .restaurant-name-corner::after {
+      content: " ✎";
+      font-size: 0.9em;
+      opacity: 0.8;
+    }
+
+    .special-customer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 99999;
+      font-family: "Patrick Hand", cursive;
+      pointer-events: auto;
+      visibility: hidden;
+      opacity: 0;
+    }
+    .special-customer-overlay.show {
+      display: flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+    .special-customer-box {
+      background: linear-gradient(180deg, #faf0e6 0%, #f0e4d8 100%);
+      border-radius: 20px;
+      padding: 24px;
+      max-width: 320px;
+      text-align: center;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+      border: 3px solid #d4c0a8;
+      pointer-events: auto;
+    }
+    .special-customer-img-wrap {
+      width: 180px;
+      min-height: 140px;
+      margin: 0 auto 12px;
+      border-radius: 12px;
+      background: #e8dcc8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .special-customer-box img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .special-customer-box img.hidden { display: none; }
+    .special-customer-placeholder {
+      display: none;
+      padding: 20px;
+      color: #6a5240;
+      font-size: 1rem;
+      text-align: center;
+    }
+    .special-customer-placeholder.show { display: block; }
+    .special-customer-box .special-customer-title {
+      font-size: 1.1rem;
+      color: #5a3b29;
+      margin: 0 0 4px;
+    }
+    .special-customer-box .special-customer-line {
+      font-size: 0.95rem;
+      color: #8a6a52;
+      font-style: italic;
+    }
+    .special-customer-box .special-customer-close {
+      margin-top: 12px;
+      padding: 8px 20px;
+      border-radius: 10px;
+      border: 2px solid #b89868;
+      background: linear-gradient(135deg, #e8dcc8 0%, #dcc8a8 100%);
+      color: #5a4428;
+      cursor: pointer;
+      font-family: "Patrick Hand", cursive;
+      font-size: 1rem;
+    }
+
+    .scene {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      margin-top: 20px;
+      margin-bottom: -24px;
+    }
+
+    .animal-wrap {
+      flex-shrink: 0;
+      transition: transform 0.5s ease, opacity 0.5s ease;
+      transform: translateY(8px);
+    }
+
+    .animal-wrap.walking-away {
+      animation: bearWalkAway 2.2s ease-in forwards;
+    }
+
+    @keyframes bearWalkAway {
+      0% {
+        transform: translateX(0) translateY(8px);
+        opacity: 1;
+      }
+      20% {
+        transform: translateX(8px) translateY(6px);
+        opacity: 1;
+      }
+      40% {
+        transform: translateX(25px) translateY(5px);
+        opacity: 1;
+      }
+      100% {
+        transform: translateX(180px) translateY(4px);
+        opacity: 0;
+      }
+    }
+
+    .animal {
+      width: 96px;
+      height: 96px;
+      position: relative;
+    }
+
+    .bear-head {
+      position: absolute;
+      inset: 0;
+      margin: auto;
+      width: 88px;
+      height: 80px;
+      background: radial-gradient(ellipse 70% 70% at 50% 45%, #d4985c, #b8723e 40%, #a66234);
+      border-radius: 45px;
+      box-shadow: 0 6px 0 rgba(0, 0, 0, 0.1), inset -2px -4px 8px rgba(0,0,0,0.08);
+    }
+
+    .bear-ear {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      background: #c5844a;
+      border-radius: 50%;
+      top: -10px;
+    }
+
+    .bear-ear.left {
+      left: 6px;
+    }
+
+    .bear-ear.right {
+      right: 6px;
+    }
+
+    .bear-ear-inner {
+      position: absolute;
+      inset: 7px;
+      margin: auto;
+      border-radius: 50%;
+      background: #e6b686;
+    }
+
+    .bear-face {
+      position: absolute;
+      inset: 0;
+      margin: auto;
+    }
+
+    .bear-eye {
+      position: absolute;
+      top: 30px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #5a3b29;
+      box-shadow: 0 0 0 3px #e6b686;
+      animation: bearBlink 4s ease-in-out infinite;
+    }
+
+    .bear-eye.left {
+      left: 24px;
+    }
+
+    .bear-eye.right {
+      right: 24px;
+    }
+
+    .bear-head.sleepy .bear-eye {
+      height: 3px;
+      border-radius: 50%;
+      box-shadow: none;
+      animation: none;
+    }
+
+    @keyframes bearBlink {
+      0%, 45%, 55%, 100% { transform: scaleY(1); height: 10px; }
+      50% { transform: scaleY(0.15); height: 2px; }
+    }
+
+    .bear-muzzle {
+      position: absolute;
+      width: 40px;
+      height: 32px;
+      background: #f3d4ab;
+      border-radius: 40px;
+      left: 50%;
+      top: 46px;
+      transform: translateX(-50%);
+    }
+
+    .bear-nose {
+      position: absolute;
+      width: 12px;
+      height: 10px;
+      background: #5a3b29;
+      border-radius: 50% 50% 60% 60%;
+      left: 50%;
+      top: 6px;
+      transform: translateX(-50%);
+    }
+
+    .bear-mouth {
+      position: absolute;
+      left: 50%;
+      top: 18px;
+      width: 24px;
+      height: 14px;
+      transform: translateX(-50%);
+      border-bottom: 2px solid #5a3b29;
+      border-radius: 0 0 20px 20px;
+      transition: border-radius 0.3s ease, top 0.3s ease;
+    }
+
+    .bear-head.happy .bear-mouth {
+      border-radius: 0 0 24px 24px;
+      top: 16px;
+      width: 26px;
+    }
+
+    .bear-head.happy .bear-eye {
+      box-shadow: 0 0 0 3px #e6b686, 0 1px 0 0 rgba(0,0,0,0.1);
+    }
+
+    .animal { display: none; }
+    .animal.animal-visible { display: block; }
+    .animal.animal-special {
+      display: none;
+      width: 96px;
+      height: 96px;
+      position: relative;
+    }
+    .animal.animal-special.animal-visible { display: block; }
+    .animal-special-face {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+      border: 3px solid #d4c0a8;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .rabbit-head {
+      position: absolute;
+      inset: 0;
+      margin: auto;
+      width: 72px;
+      height: 76px;
+      background: radial-gradient(ellipse 70% 70% at 50% 45%, #f0e0d8, #e0c8b8 50%, #d0b0a0);
+      border-radius: 50%;
+      box-shadow: 0 5px 0 rgba(0, 0, 0, 0.08), inset 0 2px 0 rgba(255,255,255,0.3);
+    }
+    .rabbit-ear {
+      position: absolute;
+      width: 18px;
+      height: 42px;
+      background: linear-gradient(90deg, #e8d0c0, #d8b8a8);
+      border-radius: 50%;
+      top: -18px;
+      box-shadow: inset 1px 0 0 rgba(255,255,255,0.3);
+    }
+    .rabbit-ear.left { left: 12px; transform: rotate(-18deg); }
+    .rabbit-ear.right { right: 12px; transform: rotate(18deg); }
+    .rabbit-ear-inner {
+      position: absolute;
+      inset: 6px 4px 6px 4px;
+      background: #f0d8d0;
+      border-radius: 50%;
+    }
+    .rabbit-face { position: absolute; inset: 0; margin: auto; }
+    .rabbit-eye {
+      position: absolute;
+      top: 28px;
+      width: 10px;
+      height: 12px;
+      border-radius: 50%;
+      background: #4a3a2a;
+      animation: bearBlink 4s ease-in-out infinite;
+    }
+    .rabbit-eye.left { left: 20px; }
+    .rabbit-eye.right { right: 20px; }
+    .rabbit-head.sleepy .rabbit-eye { height: 3px; animation: none; }
+    .rabbit-nose {
+      position: absolute;
+      left: 50%;
+      top: 48px;
+      transform: translateX(-50%);
+      width: 14px;
+      height: 10px;
+      background: #e8a090;
+      border-radius: 50%;
+    }
+    .rabbit-mouth {
+      position: absolute;
+      left: 50%;
+      top: 58px;
+      width: 20px;
+      height: 10px;
+      transform: translateX(-50%);
+      border-bottom: 2px solid #8a6a5a;
+      border-radius: 0 0 20px 20px;
+      transition: all 0.3s ease;
+    }
+    .rabbit-head.happy .rabbit-mouth { width: 24px; top: 56px; }
+
+    .turtle-shell {
+      position: absolute;
+      inset: 0;
+      margin: auto;
+      width: 82px;
+      height: 70px;
+      background: radial-gradient(ellipse 60% 70% at 50% 50%, #7a9a6a, #5a7a4a 40%, #4a6a3a);
+      border-radius: 50% 50% 48% 48%;
+      box-shadow: 0 6px 0 rgba(0,0,0,0.15), inset 0 2px 0 rgba(255,255,255,0.15);
+    }
+    .turtle-shell-pattern {
+      position: absolute;
+      inset: 8px;
+      border: 2px solid rgba(0,0,0,0.15);
+      border-radius: 50%;
+    }
+    .turtle-head {
+      position: absolute;
+      left: 50%;
+      bottom: -4px;
+      transform: translateX(-50%);
+      width: 36px;
+      height: 28px;
+      z-index: 2;
+      background: linear-gradient(180deg, #8ab078, #6a9058);
+      border-radius: 50% 50% 40% 40%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .turtle-eye {
+      position: absolute;
+      top: 6px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #3a2a1a;
+      animation: bearBlink 5s ease-in-out infinite;
+    }
+    .turtle-eye.left { left: 4px; }
+    .turtle-eye.right { right: 4px; }
+    .turtle-head.sleepy .turtle-eye { height: 3px; animation: none; }
+    .turtle-smile {
+      position: absolute;
+      left: 50%;
+      bottom: 6px;
+      width: 16px;
+      height: 8px;
+      transform: translateX(-50%);
+      border-bottom: 2px solid #4a5a3a;
+      border-radius: 0 0 16px 16px;
+      transition: all 0.3s ease;
+    }
+    .turtle-head.happy .turtle-smile { width: 20px; }
+
+    .owl-head {
+      position: absolute;
+      inset: 0;
+      margin: auto;
+      width: 84px;
+      height: 82px;
+      background: radial-gradient(ellipse 75% 75% at 50% 48%, #b89868, #9a7850 45%, #7a6038);
+      border-radius: 50%;
+      box-shadow: 0 5px 0 rgba(0,0,0,0.1), inset 0 2px 0 rgba(255,255,255,0.2);
+    }
+    .owl-face { position: absolute; inset: 0; margin: auto; }
+    .owl-ear-tuft {
+      position: absolute;
+      width: 12px;
+      height: 16px;
+      background: #8a7040;
+      border-radius: 50% 50% 40% 40%;
+      top: -4px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    }
+    .owl-ear-tuft.left { left: 18px; transform: rotate(-25deg); }
+    .owl-ear-tuft.right { right: 18px; transform: rotate(25deg); }
+    .owl-eye {
+      position: absolute;
+      top: 24px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #1a2a1a;
+      box-shadow: inset 0 0 0 5px #e8e0c8, 0 0 0 3px #6a5830;
+      animation: bearBlink 5s ease-in-out infinite;
+    }
+    .owl-eye.left { left: 12px; }
+    .owl-eye.right { right: 12px; }
+    .owl-eye::after {
+      content: "";
+      position: absolute;
+      top: 5px;
+      left: 7px;
+      width: 7px;
+      height: 7px;
+      background: #fff;
+      border-radius: 50%;
+    }
+    .owl-head.sleepy .owl-eye { height: 5px; border-radius: 50%; animation: none; box-shadow: inset 0 0 0 2px #e8e0c8, 0 0 0 2px #6a5830; }
+    .owl-head.sleepy .owl-eye::after { display: none; }
+    .owl-beak {
+      position: absolute;
+      left: 50%;
+      top: 54px;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 10px solid #8a6040;
+    }
+    .owl-mouth {
+      display: none;
+    }
+    .owl-head.happy .owl-beak {
+      border-top-width: 8px;
+      top: 56px;
+    }
+
+    .request-text {
+      text-align: center;
+      font-size: 0.95rem;
+      color: #6a5344;
+      margin: 0 0 16px;
+      padding: 0 8px;
+      line-height: 1.4;
+      font-style: italic;
+    }
+
+    .kitchen-row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      margin: 8px 0 18px;
+    }
+
+    .mug-and-table {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .spoon-table {
+      width: 76px;
+      height: 58px;
+      background: linear-gradient(180deg, #c4a574 0%, #a88a5c 50%, #8a6e44 100%);
+      border-radius: 8px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255,255,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .spoon-table::before {
+      content: "";
+      position: absolute;
+      left: -4px;
+      right: -4px;
+      bottom: -6px;
+      height: 6px;
+      background: #8a6e44;
+      border-radius: 2px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .spoon-on-table {
+      width: 44px;
+      height: 52px;
+      cursor: grab;
+      flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+    }
+
+    .spoon-on-table:active {
+      cursor: grabbing;
+    }
+
+    .spoon-on-table .spoon-img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+      pointer-events: none;
+    }
+
+    .pot {
+      width: 72px;
+      height: 88px;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .pot-mug {
+      position: absolute;
+      left: 0;
+      right: 16px;
+      top: 8px;
+      bottom: 0;
+      background: #e8d5c4;
+      border-radius: 8px 8px 16px 16px;
+      box-shadow: 0 4px 0 rgba(0, 0, 0, 0.12), inset 0 0 0 3px #d4c0ad;
+    }
+
+    .pot-handle {
+      position: absolute;
+      right: 0;
+      top: 16px;
+      width: 20px;
+      height: 44px;
+      border: 4px solid #d4c0ad;
+      border-left: none;
+      border-radius: 0 20px 20px 0;
+      box-shadow: 2px 0 0 rgba(0, 0, 0, 0.06);
+    }
+
+    .pot.stirring .pot-mug {
+      animation: potWiggle 0.4s ease-in-out infinite alternate;
+    }
+
+    @keyframes potWiggle {
+      from { transform: rotate(-1deg); }
+      to { transform: rotate(1deg); }
+    }
+
+    .pot-liquid {
+      position: absolute;
+      left: 10px;
+      right: 26px;
+      bottom: 12px;
+      height: 32px;
+      border-radius: 6px 6px 12px 12px;
+      background: #f4d8a8;
+      box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.4);
+      transition: background 0.5s ease;
+    }
+
+    .pour-stream {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 8px;
+      height: 0;
+      transform: translateX(-50%);
+      border-radius: 999px;
+      background: rgba(244, 216, 168, 0.9);
+      pointer-events: none;
+      opacity: 0;
+      transition: none;
+    }
+
+    .pour-stream.visible {
+      height: 40px;
+      opacity: 1;
+    }
+
+    .game.pizza-recipe .pot { display: none; }
+    .game.oatmeal-recipe .pot { display: none; }
+    .oatmeal-bowl-wrap {
+      display: none;
+      width: 88px;
+      height: 72px;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .game.oatmeal-recipe .oatmeal-bowl-wrap { display: flex; }
+    .oatmeal-bowl {
+      width: 80px;
+      height: 36px;
+      background: linear-gradient(180deg, #e8dcc8 0%, #d8c8b0 60%, #c8b898 100%);
+      border-radius: 0 0 40px 40px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.15), inset 0 2px 0 rgba(255,255,255,0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    .oatmeal-bowl-content {
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      bottom: 6px;
+      height: 24px;
+      border-radius: 0 0 32px 32px;
+      background: #f5f0e8;
+      transition: background 0.4s ease;
+    }
+    .oatmeal-bowl-content.has-oats { background: #c8a878; }
+    .oatmeal-bowl-content.has-stirred { background: #c4a068; }
+
+    .pizza-pan-wrap {
+      display: none;
+      width: 100px;
+      height: 100px;
+      position: relative;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+    }
+    .game.pizza-recipe .pizza-pan-wrap { display: flex; }
+    .pizza-pan {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #6a5a4a, #5a4a3a);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.1);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .pizza-surface {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: #e0d0b0;
+      box-shadow: inset 0 0 8px rgba(0,0,0,0.08);
+      transition: background 0.4s ease;
+    }
+    .pizza-surface.has-sauce { background: #c05040; }
+    .pizza-surface.has-cheese { background: linear-gradient(135deg, #e8d8a0 0%, #d8c878 100%); }
+
+    .minigame-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+    }
+    .minigame-overlay.open { display: flex; }
+    .minigame-box {
+      background: linear-gradient(180deg, #faf0e6 0%, #f0e4d8 100%);
+      border-radius: 16px;
+      padding: 20px;
+      max-width: 320px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+      border: 1px solid #d4c0a8;
+      text-align: center;
+    }
+    .minigame-title {
+      font-size: 1rem;
+      color: #5a4428;
+      margin: 0 0 12px;
+    }
+    .minigame-dough {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 12px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #f0e4d0, #d8c8a8);
+      box-shadow: inset 0 -4px 12px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: transform 0.15s ease;
+      user-select: none;
+    }
+    .minigame-dough:active { transform: scale(0.97); }
+    .minigame-sauce-area {
+      margin: 0 auto 12px;
+      position: relative;
+      width: 200px;
+      height: 200px;
+    }
+    .minigame-sauce-canvas {
+      display: block;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      cursor: crosshair;
+      background: #e0d0b0;
+    }
+    .minigame-sauce-hint {
+      font-size: 0.8rem;
+      color: #7a6a52;
+      margin-top: 8px;
+    }
+    .minigame-done-btn {
+      margin-top: 12px;
+      padding: 10px 20px;
+      border-radius: 10px;
+      border: 1px solid #c4a878;
+      background: linear-gradient(135deg, #e8d4c4 0%, #dcc8b8 100%);
+      color: #5a4428;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: none;
+    }
+    .minigame-done-btn.show { display: inline-block; }
+
+    .minigame-oatmeal-area { margin: 0 auto 12px; }
+    .minigame-oatmeal-bowl {
+      width: 140px;
+      height: 60px;
+      margin: 0 auto 12px;
+      background: linear-gradient(180deg, #e8dcc8 0%, #d8c8b0 100%);
+      border-radius: 0 0 70px 70px;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.1);
+      position: relative;
+      overflow: hidden;
+    }
+    .minigame-oatmeal-fill {
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      bottom: 8px;
+      height: 0%;
+      max-height: 44px;
+      background: linear-gradient(180deg, #d8c898 0%, #c4a878 100%);
+      border-radius: 0 0 60px 60px;
+      transition: height 0.2s ease;
+    }
+    .minigame-oatmeal-scoop {
+      cursor: pointer;
+      padding: 10px 20px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #d8c898 0%, #c4a878 100%);
+      border: 2px solid #a08050;
+      color: #5a4428;
+      font-size: 1rem;
+      user-select: none;
+      display: inline-block;
+    }
+    .minigame-oatmeal-scoop:hover { filter: brightness(1.05); }
+    .minigame-oatmeal-scoop:active { transform: scale(0.98); }
+
+    .minigame-herb-area {
+      margin: 0 auto 12px;
+      position: relative;
+      width: 280px;
+      height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .minigame-herb-pot {
+      width: 80px;
+      height: 70px;
+      background: linear-gradient(180deg, #c8b098 0%, #a89070 100%);
+      border-radius: 0 0 40px 40px;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.2);
+      border: 2px solid #8a7050;
+      flex-shrink: 0;
+      position: relative;
+    }
+    .minigame-herb-pot::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: -8px;
+      transform: translateX(-50%);
+      width: 50px;
+      height: 12px;
+      background: linear-gradient(180deg, #b89878, #a08060);
+      border-radius: 4px;
+      border: 2px solid #8a7050;
+      pointer-events: none;
+    }
+    .minigame-herb-pile {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      max-width: 140px;
+      justify-content: center;
+    }
+    .minigame-herb-sprig {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #6a9050 0%, #4a7030 100%);
+      border-radius: 50% 50% 40% 40%;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      cursor: grab;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-user-drag: element;
+      transition: transform 0.1s ease, opacity 0.2s ease;
+    }
+    .minigame-herb-sprig:active { cursor: grabbing; }
+    .minigame-herb-sprig:hover { transform: scale(1.08); }
+    .minigame-herb-sprig.used { opacity: 0.3; pointer-events: none; }
+    .minigame-herb-pot.drag-over {
+      box-shadow: 0 0 0 3px #6a9050;
+    }
+    .minigame-herb-pot-inside {
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      bottom: 10px;
+      top: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      align-content: flex-end;
+      justify-content: center;
+      gap: 2px;
+      pointer-events: none;
+    }
+    .minigame-herb-in-pot {
+      width: 14px;
+      height: 14px;
+      background: linear-gradient(135deg, #5a8040 0%, #4a7030 100%);
+      border-radius: 50%;
+    }
+
+    .minigame-pour-area { margin: 0 auto 12px; display: flex; align-items: flex-end; justify-content: center; gap: 24px; }
+    .minigame-pour-bottle {
+      width: 36px; height: 56px;
+      background: linear-gradient(90deg, #e0d8c8 0%, #f8f4e8 50%, #e8e0d0 100%);
+      border-radius: 4px 4px 12px 12px;
+      cursor: pointer;
+      border: 1px solid #c8b8a0;
+      position: relative;
+    }
+    .minigame-pour-bottle.water { background: linear-gradient(90deg, #a0c8e0 0%, #c8e0f0 50%, #b0d4e8 100%); border-color: #90b8d8; }
+    .minigame-pour-bottle.broth { background: linear-gradient(90deg, #c8a878 0%, #e0c898 50%, #d0b080 100%); border-color: #a08050; }
+    .minigame-pour-mug {
+      width: 56px; height: 48px;
+      background: linear-gradient(180deg, #e8dcc8 0%, #d8c8b0 100%);
+      border-radius: 0 0 28px 28px;
+      border: 2px solid #b89868;
+      position: relative;
+      overflow: hidden;
+    }
+    .minigame-pour-fill {
+      position: absolute; left: 4px; right: 4px; bottom: 4px;
+      height: 0%;
+      max-height: 36px;
+      border-radius: 0 0 20px 20px;
+      transition: height 0.2s ease;
+    }
+    .minigame-pour-fill.milk { background: linear-gradient(180deg, #f8f4e8, #e8e0d0); }
+    .minigame-pour-fill.water { background: linear-gradient(180deg, #c8e0f0, #a8c8e0); }
+    .minigame-pour-fill.broth { background: linear-gradient(180deg, #d8c098, #c8a878); }
+
+    .minigame-honey-area { margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; gap: 20px; }
+    .minigame-honey-jar {
+      width: 44px; height: 48px;
+      background: linear-gradient(135deg, #e8c040 0%, #c8a030 100%);
+      border-radius: 50% 50% 45% 45%;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      border: 2px solid #a07820;
+    }
+    .minigame-honey-mug {
+      width: 52px; height: 44px;
+      background: linear-gradient(180deg, #e8dcc8 0%, #d8c8b0 100%);
+      border-radius: 0 0 26px 26px;
+      border: 2px solid #b89868;
+      position: relative;
+      overflow: hidden;
+    }
+    .minigame-honey-drips { position: absolute; left: 4px; right: 4px; bottom: 4px; height: 0; max-height: 32px; border-radius: 0 0 18px 18px; background: linear-gradient(180deg, #e8c040, #c8a030); transition: height 0.2s; }
+
+    .minigame-tea-area { margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; gap: 24px; }
+    .minigame-tea-bag {
+      width: 28px; height: 40px;
+      background: linear-gradient(180deg, #b8c898 0%, #8a9a70 100%);
+      border-radius: 4px;
+      cursor: grab;
+      font-size: 0.7rem;
+      display: flex; align-items: center; justify-content: center;
+      color: #5a4a30;
+      border: 1px solid #7a8a60;
+    }
+    .minigame-tea-mug {
+      width: 56px; height: 52px;
+      background: linear-gradient(180deg, #e8dcc8 0%, #d8c8b0 100%);
+      border-radius: 0 0 28px 28px;
+      border: 2px solid #b89868;
+      position: relative;
+    }
+    .minigame-tea-mug.drag-over { box-shadow: 0 0 0 3px #6a9050; }
+
+    .minigame-cocoa-area { margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; gap: 20px; }
+    .minigame-cocoa-tin {
+      width: 40px; height: 48px;
+      background: linear-gradient(180deg, #6a4830 0%, #4a2818 100%);
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      border: 2px solid #3a2010;
+    }
+    .minigame-cocoa-mug {
+      width: 52px; height: 46px;
+      background: linear-gradient(180deg, #f5f0e8 0%, #e8e0d0 100%);
+      border-radius: 0 0 26px 26px;
+      border: 2px solid #b89868;
+      position: relative;
+      overflow: hidden;
+    }
+    .minigame-cocoa-fill { position: absolute; left: 4px; right: 4px; bottom: 4px; height: 0; max-height: 30px; border-radius: 0 0 18px 18px; background: linear-gradient(180deg, #5a3828, #4a2818); transition: height 0.2s; }
+
+    .minigame-cheese-area { margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; gap: 16px; }
+    .minigame-cheese-pile { display: flex; flex-wrap: wrap; gap: 6px; max-width: 100px; justify-content: center; }
+    .minigame-cheese-wedge {
+      width: 24px; height: 20px;
+      background: linear-gradient(135deg, #f0e090 0%, #d8c050 100%);
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 20% 100%);
+      cursor: grab;
+      border: none;
+    }
+    .minigame-cheese-pan {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: #c05040;
+      border: 3px solid #8a3020;
+      position: relative;
+    }
+    .minigame-cheese-pan.drag-over { box-shadow: 0 0 0 3px #e8d878; }
+
+    .ingredients {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      max-width: 100%;
+    }
+
+    .ingredient-card {
+      flex: 1 1 90px;
+      min-width: 80px;
+      max-width: 140px;
+      background: #ffe3bd;
+      border-radius: 14px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      cursor: grab;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+      transform: none !important;
+      transition: none !important;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .ingredient-card:hover,
+    .ingredient-card:active,
+    .ingredient-card:focus {
+      transform: none !important;
+      outline: none;
+      border: none;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .ingredient-card.added {
+      opacity: 0.6;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+      transform: none !important;
+    }
+
+    .ingredient-card *,
+    .ingredient-card:active *,
+    .ingredient-card.added * {
+      transform: none !important;
+      transition: none !important;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .ingredient-card[data-step="0"] {
+      background: #f5f0e6;
+    }
+    .ingredient-card[data-step="0"].added {
+      background: #e8e2d6;
+    }
+
+    .ingredient-card[data-step="1"] {
+      background: #fae8c8;
+    }
+    .ingredient-card[data-step="1"].added {
+      background: #f0d9a0;
+    }
+
+    .ingredient-icon {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .ingredient-icon svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .ingredient-label {
+      font-size: 0.8rem;
+      color: #6a4934;
+      text-align: center;
+      transform: translateZ(0);
+      backface-visibility: hidden;
+      min-width: 0;
+    }
+
+    .relax-label {
+      font-size: 0.8rem;
+      color: #8a6a52;
+      margin-bottom: 4px;
+    }
+
+    .relax-bar {
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      background: #f0dcc2;
+      overflow: hidden;
+    }
+
+    .relax-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #f6c18b, #f8a4a4);
+      transition: width 0.6s ease;
+    }
+
+    .note {
+      text-align: center;
+      font-size: 0.8rem;
+      color: #a08366;
+      margin-top: 8px;
+      padding: 0 4px;
+      word-wrap: break-word;
+    }
+
+    .next-recipe-btn {
+      margin-top: 16px;
+      width: 100%;
+      font-family: "Patrick Hand", cursive;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid #e0ccbc;
+      background: linear-gradient(135deg, #f0e0d4 0%, #e8d4c4 100%);
+      color: #6a4934;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+    }
+
+    .next-recipe-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .recipe-picker {
+      display: none;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed #c4a878;
+    }
+
+    .recipe-picker.open {
+      display: block;
+    }
+
+    .recipe-picker-title {
+      font-family: "Patrick Hand", cursive;
+      font-size: 0.85rem;
+      color: #5a4428;
+      margin-bottom: 10px;
+    }
+
+    .recipe-picker-btns {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .recipe-picker-btn {
+      font-family: "Patrick Hand", cursive;
+      font-size: 0.85rem;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid #d4c0a8;
+      background: linear-gradient(135deg, #f5ebe0 0%, #ebe0d0 100%);
+      color: #5a4428;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .recipe-picker-btn:hover {
+      background: linear-gradient(135deg, #ebe0d0 0%, #e0d4c0 100%);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    .recipe-picker-btn.next-in-order {
+      font-weight: 600;
+      border-color: #b89868;
+      background: linear-gradient(135deg, #e8dcc8 0%, #dcc8a8 100%);
+    }
+
+    .make-this-btn {
+      font-family: "Patrick Hand", cursive;
+      font-size: 0.8rem;
+      margin-top: 8px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid #b89868;
+      background: linear-gradient(135deg, #e8dcc8 0%, #dcc8a8 100%);
+      color: #5a4428;
+      cursor: pointer;
+      width: 100%;
+    }
+    .make-this-btn:hover {
+      background: linear-gradient(135deg, #dcc8a8 0%, #c4a878 100%);
+    }
+    .bear-banner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 999;
+      background: linear-gradient(180deg, #8b6914 0%, #6b4a0a 100%);
+      color: #fff;
+      text-align: center;
+      padding: 12px 16px;
+      font-family: "Patrick Hand", cursive;
+      font-size: 2rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .bear-banner-emoji { font-size: 3rem; display: block; margin-bottom: 4px; }
+  </style>
+</head>
+<body>
+    <div class="bear-banner" aria-hidden="true"><span class="bear-banner-emoji">🐻</span> Cozy Animal Kitchen</div>
+    <div class="restaurant-bg">
+      <div class="restaurant-bg-wall"></div>
+      <div class="restaurant-bg-floor"></div>
+      <div class="restaurant-bg-baseboard"></div>
+      <div class="restaurant-furniture-left">
+        <div class="restaurant-chair back-left">
+          <span class="restaurant-chair-leg left"></span>
+          <span class="restaurant-chair-leg right"></span>
+        </div>
+        <div class="restaurant-chair">
+          <span class="restaurant-chair-leg left"></span>
+          <span class="restaurant-chair-leg right"></span>
+        </div>
+        <div class="restaurant-table">
+          <span class="restaurant-table-leg left"></span>
+          <span class="restaurant-table-leg right"></span>
+        </div>
+      </div>
+      <div class="restaurant-furniture-right">
+        <div class="restaurant-chair back-left">
+          <span class="restaurant-chair-leg left"></span>
+          <span class="restaurant-chair-leg right"></span>
+        </div>
+        <div class="restaurant-chair">
+          <span class="restaurant-chair-leg left"></span>
+          <span class="restaurant-chair-leg right"></span>
+        </div>
+        <div class="restaurant-table">
+          <span class="restaurant-table-leg left"></span>
+          <span class="restaurant-table-leg right"></span>
+        </div>
+      </div>
+    </div>
+    <div class="bg-cupboard">
+      <div class="bg-cupboard-shelf"></div>
+      <div class="bg-cupboard-shelf"></div>
+      <div class="bg-cupboard-shelf"></div>
+      <div class="bg-cupboard-shelf"></div>
+      <div class="bg-cupboard-items">
+        <div class="bg-cupboard-item-wrap" data-ingredient="milk" title="Milk"><div class="bg-cupboard-item milk"></div><span class="bg-cupboard-item-label">Milk</span></div>
+          <div class="bg-cupboard-item-wrap" data-ingredient="water" title="Water"><div class="bg-cupboard-item water"></div><span class="bg-cupboard-item-label">Water</span></div>
+          <div class="bg-cupboard-item-wrap" data-ingredient="honey" title="Honey"><div class="bg-cupboard-item honey"></div><span class="bg-cupboard-item-label">Honey</span></div>
+          <div class="bg-cupboard-item-wrap" data-ingredient="cocoa" title="Cocao"><div class="bg-cupboard-item cocoa"></div><span class="bg-cupboard-item-label">Cocao</span></div>
+          <div class="bg-cupboard-item-wrap" data-ingredient="tea" title="Tea"><div class="bg-cupboard-item tea"></div><span class="bg-cupboard-item-label">Tea</span></div>
+          <div class="bg-cupboard-item-wrap" data-ingredient="oats" title="Oats"><div class="bg-cupboard-item oats"></div><span class="bg-cupboard-item-label">Oats</span></div>
+          <div class="bg-cupboard-item-wrap" data-ingredient="herbs" title="Herbs"><div class="bg-cupboard-item herbs"></div><span class="bg-cupboard-item-label">Herbs</span></div>
+          <div class="bg-cupboard-item-wrap" data-ingredient="cheese" title="Cheese"><div class="bg-cupboard-item cheese"></div><span class="bg-cupboard-item-label">Cheese</span></div>
+      </div>
+    </div>
+    <div class="player-position-wrap">
+      <div class="player-position-spot at-table" id="playerPositionSpot">
+        <div class="player-position-figure" id="playerPositionArrow" aria-hidden="true">
+          <svg viewBox="0 0 48 64" xmlns="http://www.w3.org/2000/svg">
+            <!-- legs -->
+            <path d="M18 52 L18 62 L22 62 L22 52 M26 52 L26 62 L30 62 L30 52" fill="#6a4934" stroke="#5a4030" stroke-width="1"/>
+            <!-- body -->
+            <ellipse cx="24" cy="38" rx="12" ry="14" fill="#8b7355" stroke="#6a5538" stroke-width="1"/>
+            <!-- arms -->
+            <path d="M12 34 L6 42 M36 34 L42 42" stroke="#7a6348" stroke-width="3" stroke-linecap="round" fill="none"/>
+            <!-- head -->
+            <circle cx="24" cy="18" r="14" fill="#e8c8a0" stroke="#d4a878" stroke-width="1"/>
+            <!-- hair -->
+            <path d="M10 18 A14 14 0 0 1 38 18 A14 14 0 0 1 10 18Z" fill="#5a4030" stroke="#4a3828" stroke-width="0.8"/>
+            <!-- eyes -->
+            <ellipse cx="19" cy="16" rx="2.5" ry="3" fill="#2a2a2a"/>
+            <ellipse cx="29" cy="16" rx="2.5" ry="3" fill="#2a2a2a"/>
+            <!-- smile -->
+            <path d="M18 22 Q24 28 30 22" stroke="#8a6040" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span class="player-position-label" id="playerPositionLabel">You are at the table</span>
+      </div>
+    </div>
+    <div class="player-holding-wrap" id="playerHoldingWrap">Holding: <span id="playerHoldingName"></span></div>
+    <div class="player-keys-hint" id="playerKeysHint">A or ← Cupboard · D or → Table</div>
+    <div class="restaurant-name-overlay" id="restaurantNameOverlay">
+      <div class="restaurant-name-box">
+        <h2>Name your restaurant</h2>
+        <p>What should your cozy kitchen be called?</p>
+        <input type="text" id="restaurantNameInput" placeholder="e.g. The Happy Bear Café" maxlength="40" autocomplete="off">
+        <button type="button" id="restaurantNameSubmit">Open my restaurant</button>
+      </div>
+    </div>
+    <div class="restaurant-name-corner" id="restaurantNameCorner" title="Click to change name">Cozy Animal Kitchen</div>
+    <div class="special-customer-overlay" id="specialCustomerOverlay">
+      <div class="special-customer-box">
+        <div class="special-customer-img-wrap">
+          <img id="specialCustomerImg" src="" alt="Special customer">
+          <div class="special-customer-placeholder" id="specialCustomerPlaceholder">✨ Special customer ✨</div>
+        </div>
+        <p class="special-customer-title">A special customer has arrived.</p>
+        <p class="special-customer-line">"Nah, I'd win."</p>
+        <button type="button" class="special-customer-close" id="specialCustomerClose">Okay!</button>
+      </div>
+    </div>
+    <div class="game">
+        <h1 id="restaurantTitle">Cozy Animal Kitchen</h1>
+        <div class="subtitle">Slow cooking to relax you and your animal friends</div>
+        <img class="bear-photo" src="https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?w=600" alt="Bear" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <div class="bear-photo bear-photo-fallback" style="display:none; font-size: 8rem; line-height: 200px; text-align: center;">🐻</div>
+        <div class="request-text" id="message">Today’s request: warm honey milk.</div>
+    
+        <div class="kitchen-row">
+          <div class="mug-and-table">
+            <div class="spoon-table">
+              <div class="spoon-on-table" id="tableSpoon" draggable="true" aria-label="Spoon to stir">
+                <img src="spoon.png" alt="Spoon" class="spoon-img">
+              </div>
+            </div>
+            <div class="pot" id="pot">
+              <div class="pot-mug"></div>
+              <div class="pot-handle"></div>
+              <div class="pot-liquid" id="potLiquid"></div>
+              <div class="pour-stream" id="pourStream"></div>
+            </div>
+            <div class="pizza-pan-wrap" id="pizzaPanWrap">
+              <div class="pizza-pan">
+                <div class="pizza-surface" id="pizzaSurface"></div>
+              </div>
+            </div>
+            <div class="oatmeal-bowl-wrap" id="oatmealBowlWrap">
+              <div class="oatmeal-bowl">
+                <div class="oatmeal-bowl-content" id="oatmealBowlContent"></div>
+              </div>
+            </div>
+          </div>
+          <div class="ingredients">
+            <div class="ingredient-card" data-step="0">
+              <div class="ingredient-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#6a4934" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M8.5 4L7 20h10L15.5 4H8.5z"/>
+                  <path d="M9 8l-1 10h7L15 8H9z" fill="#f8f6f0" stroke="none"/>
+                </svg>
+              </div>
+              <div class="ingredient-label">Pour warm milk</div>
+            </div>
+            <div class="ingredient-card" data-step="1">
+              <div class="ingredient-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#6a4934" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="13" r="5.5"/>
+                  <path d="M12 5v2.5" fill="none"/>
+                  <circle cx="12" cy="5" r="2" fill="#6a4934"/>
+                  <circle cx="12" cy="13" r="4" fill="#d4a84a" stroke="none"/>
+                  <circle cx="12" cy="13" r="5.5" stroke="#6a4934" fill="none"/>
+                </svg>
+              </div>
+              <div class="ingredient-label">Add honey</div>
+            </div>
+            <div class="ingredient-card" data-step="2">
+              <div class="ingredient-icon">🥄</div>
+              <div class="ingredient-label">Stir slowly</div>
+            </div>
+          </div>
+        </div>
+    
+        <div class="relax-label" id="relaxLabel">Relaxation (you & your friend)</div>
+        <div class="relax-bar">
+          <div class="relax-fill" id="relaxFill"></div>
+        </div>
+    
+        <div class="note">
+          No timer, no game over — breathe, cook slowly, and relax together.
+        </div>
+
+        <div class="scene" id="scene">
+          <div class="animal-wrap" id="animalWrap">
+            <div class="animal animal-bear animal-visible">
+              <div class="bear-head animal-head" id="bearHead">
+                <div class="bear-ear left">
+                  <div class="bear-ear-inner"></div>
+                </div>
+                <div class="bear-ear right">
+                  <div class="bear-ear-inner"></div>
+                </div>
+                <div class="bear-face">
+                  <div class="bear-eye left"></div>
+                  <div class="bear-eye right"></div>
+                  <div class="bear-muzzle">
+                    <div class="bear-nose"></div>
+                    <div class="bear-mouth"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="animal animal-rabbit">
+              <div class="rabbit-head animal-head">
+                <div class="rabbit-ear left"><div class="rabbit-ear-inner"></div></div>
+                <div class="rabbit-ear right"><div class="rabbit-ear-inner"></div></div>
+                <div class="rabbit-face">
+                  <div class="rabbit-eye left"></div>
+                  <div class="rabbit-eye right"></div>
+                  <div class="rabbit-nose"></div>
+                  <div class="rabbit-mouth"></div>
+                </div>
+              </div>
+            </div>
+            <div class="animal animal-turtle">
+              <div class="turtle-shell">
+                <div class="turtle-shell-pattern"></div>
+              </div>
+              <div class="turtle-head animal-head">
+                <div class="turtle-eye left"></div>
+                <div class="turtle-eye right"></div>
+                <div class="turtle-smile"></div>
+              </div>
+            </div>
+            <div class="animal animal-owl">
+              <div class="owl-head animal-head">
+                <div class="owl-ear-tuft left"></div>
+                <div class="owl-ear-tuft right"></div>
+                <div class="owl-face">
+                  <div class="owl-eye left"></div>
+                  <div class="owl-eye right"></div>
+                  <div class="owl-beak"></div>
+                  <div class="owl-mouth"></div>
+                </div>
+              </div>
+            </div>
+            <div class="animal animal-special" id="animalSpecial">
+              <img class="animal-special-face" id="animalSpecialImg" alt="Special customer">
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <div class="minigame-overlay" id="minigameOverlay">
+      <div class="minigame-box" id="minigameBox">
+        <p class="minigame-title" id="minigameTitle">Roll the dough</p>
+        <div class="minigame-dough" id="minigameDough" style="display:none;">Click to roll!</div>
+        <div class="minigame-sauce-area" id="minigameSauceArea" style="display:none;">
+          <canvas class="minigame-sauce-canvas" id="minigameSauceCanvas" width="200" height="200"></canvas>
+          <p class="minigame-sauce-hint">Drag to spread the sauce</p>
+        </div>
+        <div class="minigame-oatmeal-area" id="minigameOatmealArea" style="display:none;">
+          <div class="minigame-oatmeal-bowl">
+            <div class="minigame-oatmeal-fill" id="minigameOatmealFill"></div>
+          </div>
+          <p class="minigame-sauce-hint">Click the oats to pour into the bowl</p>
+          <div class="minigame-oatmeal-scoop" id="minigameOatmealScoop">🥣 Oats</div>
+        </div>
+        <div class="minigame-herb-area" id="minigameHerbArea" style="display:none;">
+          <div class="minigame-herb-pile" id="minigameHerbPile">
+            <div class="minigame-herb-sprig" draggable="true" title="Drag into pot">🌿</div>
+            <div class="minigame-herb-sprig" draggable="true" title="Drag into pot">🌿</div>
+            <div class="minigame-herb-sprig" draggable="true" title="Drag into pot">🌿</div>
+            <div class="minigame-herb-sprig" draggable="true" title="Drag into pot">🌿</div>
+            <div class="minigame-herb-sprig" draggable="true" title="Drag into pot">🌿</div>
+          </div>
+          <div class="minigame-herb-pot" id="minigameHerbPot">
+            <div class="minigame-herb-pot-inside" id="minigameHerbPotInside"></div>
+          </div>
+        </div>
+        <p class="minigame-sauce-hint" id="minigameHerbHint" style="display:none;">Drag herbs into the pot!</p>
+        <div class="minigame-pour-area" id="minigamePourArea" style="display:none;">
+          <div class="minigame-pour-bottle milk" id="minigamePourBottle" title="Click to pour"></div>
+          <div class="minigame-pour-mug">
+            <div class="minigame-pour-fill milk" id="minigamePourFill"></div>
+          </div>
+        </div>
+        <p class="minigame-sauce-hint" id="minigamePourHint" style="display:none;">Click the bottle to pour into the mug!</p>
+        <div class="minigame-honey-area" id="minigameHoneyArea" style="display:none;">
+          <div class="minigame-honey-jar" id="minigameHoneyJar" title="Click to add honey">🍯</div>
+          <div class="minigame-honey-mug"><div class="minigame-honey-drips" id="minigameHoneyDrips"></div></div>
+        </div>
+        <p class="minigame-sauce-hint" id="minigameHoneyHint" style="display:none;">Click the honey jar to drizzle into the mug!</p>
+        <div class="minigame-tea-area" id="minigameTeaArea" style="display:none;">
+          <div class="minigame-tea-bag" id="minigameTeaBag" draggable="true">Tea</div>
+          <div class="minigame-tea-mug" id="minigameTeaMug">Mug</div>
+        </div>
+        <p class="minigame-sauce-hint" id="minigameTeaHint" style="display:none;">Drag the tea bag into the mug, then dip it 3 times!</p>
+        <div class="minigame-cocoa-area" id="minigameCocoaArea" style="display:none;">
+          <div class="minigame-cocoa-tin" id="minigameCocoaTin" title="Click to add cocoa">🍫</div>
+          <div class="minigame-cocoa-mug"><div class="minigame-cocoa-fill" id="minigameCocoaFill"></div></div>
+        </div>
+        <p class="minigame-sauce-hint" id="minigameCocoaHint" style="display:none;">Click the cocoa to sprinkle into the mug!</p>
+        <div class="minigame-cheese-area" id="minigameCheeseArea" style="display:none;">
+          <div class="minigame-cheese-pile" id="minigameCheesePile">
+            <div class="minigame-cheese-wedge" draggable="true"></div>
+            <div class="minigame-cheese-wedge" draggable="true"></div>
+            <div class="minigame-cheese-wedge" draggable="true"></div>
+            <div class="minigame-cheese-wedge" draggable="true"></div>
+          </div>
+          <div class="minigame-cheese-pan" id="minigameCheesePan"></div>
+        </div>
+        <p class="minigame-sauce-hint" id="minigameCheeseHint" style="display:none;">Drag cheese onto the pizza!</p>
+        <button type="button" class="minigame-done-btn" id="minigameDoneBtn">Done!</button>
+      </div>
+    </div>
+
+    <button type="button" class="recipe-book-btn" id="recipeBookBtn" aria-label="Open recipe book">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#6a4934" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+        <path d="M8 7h8"/>
+        <path d="M8 11h8"/>
+      </svg>
+    </button>
+    <div class="recipe-book-panel" id="recipeBookPanel">
+      <div class="recipe-script-header">
+        <h2 class="recipe-script-title">Kitchen Script</h2>
+        <p class="recipe-script-sub">All recipes — take your time, relax together</p>
+      </div>
+      <div class="recipe-script-body">
+        <div class="recipe-book current-recipe" id="recipeBook1">
+          <div class="recipe-book-title">Warm Honey Milk</div>
+          <ul class="recipe-book-steps" id="recipeSteps">
+            <li data-step="0">Pour warm milk into the mug (drag or click the milk)</li>
+            <li data-step="1">Add a spoon of honey (drag or click the honey)</li>
+            <li data-step="2">Stir gently (drag the spoon from the table to the mug, or circle over mug)</li>
+          </ul>
+          <button type="button" class="make-this-btn" data-recipe="1">Make this recipe</button>
+        </div>
+        <div class="recipe-book" id="recipeBook2">
+          <div class="recipe-book-title">Chamomile Tea</div>
+          <ul class="recipe-book-steps" id="recipeSteps2">
+            <li data-step="0">Pour hot water into the mug</li>
+            <li data-step="1">Add a chamomile tea bag (drag or click)</li>
+            <li data-step="2">Stir gently (drag the spoon to the mug, or circle over mug)</li>
+          </ul>
+          <button type="button" class="make-this-btn" data-recipe="2">Make this recipe</button>
+        </div>
+        <div class="recipe-book" id="recipeBook3">
+          <div class="recipe-book-title">Cozy Oatmeal</div>
+          <ul class="recipe-book-steps" id="recipeSteps3">
+            <li data-step="0">Pour warm milk into the pot (drag or click the milk)</li>
+            <li data-step="1">Add oats (drag or click)</li>
+            <li data-step="2">Stir gently (drag the spoon to the pot, or circle over it)</li>
+          </ul>
+          <button type="button" class="make-this-btn" data-recipe="3">Make this recipe</button>
+        </div>
+        <div class="recipe-book" id="recipeBook4">
+          <div class="recipe-book-title">Simple Herb Soup</div>
+          <ul class="recipe-book-steps" id="recipeSteps4">
+            <li data-step="0">Pour broth into the pot</li>
+            <li data-step="1">Add fresh herbs (drag or click)</li>
+            <li data-step="2">Stir gently (drag the spoon to the pot, or circle over it)</li>
+          </ul>
+          <button type="button" class="make-this-btn" data-recipe="4">Make this recipe</button>
+        </div>
+        <div class="recipe-book" id="recipeBook5">
+          <div class="recipe-book-title">Hot Cocoa</div>
+          <ul class="recipe-book-steps" id="recipeSteps5">
+            <li data-step="0">Pour warm milk into the mug (drag or click the milk)</li>
+            <li data-step="1">Add cocoa powder (drag or click)</li>
+            <li data-step="2">Stir gently (drag the spoon to the mug, or circle over mug)</li>
+          </ul>
+          <button type="button" class="make-this-btn" data-recipe="5">Make this recipe</button>
+        </div>
+        <div class="recipe-book" id="recipeBook6">
+          <div class="recipe-book-title">Peppermint Tea</div>
+          <ul class="recipe-book-steps" id="recipeSteps6">
+            <li data-step="0">Pour hot water into the mug</li>
+            <li data-step="1">Add a peppermint tea bag (drag or click)</li>
+            <li data-step="2">Stir gently (drag the spoon to the mug, or circle over mug)</li>
+          </ul>
+          <button type="button" class="make-this-btn" data-recipe="6">Make this recipe</button>
+        </div>
+        <div class="recipe-book" id="recipeBook7">
+          <div class="recipe-book-title">Homemade Pizza <span class="recipe-difficulty">(tricky!)</span></div>
+          <ul class="recipe-book-steps" id="recipeSteps7">
+            <li data-step="0">Roll the dough (minigame)</li>
+            <li data-step="1">Spread the sauce (minigame)</li>
+            <li data-step="2">Add cheese (drag or click, or use the spoon)</li>
+          </ul>
+          <button type="button" class="make-this-btn" data-recipe="7">Make this recipe</button>
+        </div>
+        <button type="button" class="next-recipe-btn" id="nextRecipeBtn" style="display:none;">Choose next recipe</button>
+        <div class="recipe-picker" id="recipePicker">
+          <p class="recipe-picker-title">Pick a recipe, or go in order:</p>
+          <div class="recipe-picker-btns">
+            <button type="button" class="recipe-picker-btn next-in-order" data-recipe="0">Next in order</button>
+            <button type="button" class="recipe-picker-btn" data-recipe="1">Warm Honey Milk</button>
+            <button type="button" class="recipe-picker-btn" data-recipe="2">Chamomile Tea</button>
+            <button type="button" class="recipe-picker-btn" data-recipe="3">Cozy Oatmeal</button>
+            <button type="button" class="recipe-picker-btn" data-recipe="4">Simple Herb Soup</button>
+            <button type="button" class="recipe-picker-btn" data-recipe="5">Hot Cocoa</button>
+            <button type="button" class="recipe-picker-btn" data-recipe="6">Peppermint Tea</button>
+            <button type="button" class="recipe-picker-btn" data-recipe="7">Homemade Pizza</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <script>
+        (function initSpecialCustomer() {
+          var overlay = document.getElementById("specialCustomerOverlay");
+          var closeBtn = document.getElementById("specialCustomerClose");
+          var img = document.getElementById("specialCustomerImg");
+          var placeholder = document.getElementById("specialCustomerPlaceholder");
+          if (closeBtn) closeBtn.addEventListener("click", function () {
+            if (overlay) overlay.classList.remove("show");
+          });
+          function showSpecialCustomer() {
+            if (!overlay) return;
+            var base = window.location.href.replace(/[^/]*$/, "");
+            if (img) {
+              img.src = base + "special-customer.png";
+              img.classList.remove("hidden");
+              if (placeholder) placeholder.classList.remove("show");
+              img.onload = function () {
+                if (placeholder) placeholder.classList.remove("show");
+              };
+              img.onerror = function () {
+                img.classList.add("hidden");
+                if (placeholder) placeholder.classList.add("show");
+              };
+            }
+            overlay.classList.add("show");
+          }
+          var secretPhrases = ["nah i d win", "nah id win"];
+          function normalize(s) {
+            return (s || "").toLowerCase().replace(/'/g, " ").replace(/\s+/g, " ").trim();
+          }
+          var restaurantInput = document.getElementById("restaurantNameInput");
+          if (restaurantInput) {
+            restaurantInput.addEventListener("input", function () {
+              var n = normalize(restaurantInput.value);
+              for (var i = 0; i < secretPhrases.length; i++) {
+                if (n.indexOf(secretPhrases[i]) !== -1) {
+                  showSpecialCustomer();
+                  break;
+                }
+              }
+            });
+          }
+        })();
+
+        (function initRestaurantName() {
+          var STORAGE_KEY = "cozyKitchenRestaurantName";
+          var overlay = document.getElementById("restaurantNameOverlay");
+          var input = document.getElementById("restaurantNameInput");
+          var submitBtn = document.getElementById("restaurantNameSubmit");
+          var titleEl = document.getElementById("restaurantTitle");
+          var cornerEl = document.getElementById("restaurantNameCorner");
+          function setDisplayName(name) {
+            if (titleEl) titleEl.textContent = name;
+            if (cornerEl) cornerEl.textContent = name + " "; /* space before ✎ */
+          }
+          var saved = localStorage.getItem(STORAGE_KEY);
+          if (saved && saved.trim()) {
+            setDisplayName(saved.trim());
+            if (overlay) overlay.classList.add("hidden");
+          } else {
+            if (overlay) overlay.classList.remove("hidden");
+          }
+          function applyName() {
+            var name = (input && input.value) ? input.value.trim() : "";
+            if (!name) name = "Cozy Animal Kitchen";
+            localStorage.setItem(STORAGE_KEY, name);
+            setDisplayName(name);
+            if (overlay) overlay.classList.add("hidden");
+            if (typeof setVisibleAnimal === "function" && typeof currentRecipe !== "undefined") setVisibleAnimal(currentRecipe);
+          }
+          if (submitBtn) submitBtn.addEventListener("click", applyName);
+          if (input) input.addEventListener("keydown", function (e) { if (e.key === "Enter") applyName(); });
+          if (cornerEl) cornerEl.addEventListener("click", function () {
+            if (overlay) overlay.classList.remove("hidden");
+            if (input) {
+              input.value = (cornerEl.textContent || "").replace(/\s*✎\s*$/, "").trim() || "";
+              input.focus();
+            }
+          });
+        })();
+
+        document.getElementById("recipeBookBtn").addEventListener("click", function () {
+          document.getElementById("recipeBookPanel").classList.toggle("open");
+        });
+
+        var currentRecipe = 1;
+        var messagesSet1 = [
+          "Today's request: warm honey milk.",
+          "The milk is warming gently in the mug.",
+          "The honey melts in slowly. So cozy.",
+          "You stir quietly. The kitchen feels warm and safe.",
+          "All done. Your friend is ready to rest. Good night."
+        ];
+        var messagesSet2 = [
+          "Today's request: chamomile tea.",
+          "The water is hot in the mug.",
+          "The chamomile tea is steeping. It smells calming.",
+          "You stir gently. So soothing.",
+          "All done. Your friend is ready to rest. Good night."
+        ];
+        var messagesSet3 = [
+          "Today's request: cozy oatmeal.",
+          "The milk is warming in the pot.",
+          "The oats are softening. So comforting.",
+          "You stir quietly. So cozy.",
+          "All done. Your friend is ready to rest. Good night."
+        ];
+        var messagesSet4 = [
+          "Today's request: simple herb soup.",
+          "The broth is warm in the pot.",
+          "The herbs are steeping. It smells lovely.",
+          "You stir gently. So soothing.",
+          "All done. Your friend is ready to rest. Good night."
+        ];
+        var messagesSet5 = [
+          "Today's request: hot cocoa.",
+          "The milk is warming in the mug.",
+          "The cocoa is melting in. Rich and sweet.",
+          "You stir quietly. So cozy.",
+          "All done. Your friend is ready to rest. Good night."
+        ];
+        var messagesSet6 = [
+          "Today's request: peppermint tea.",
+          "The water is hot in the mug.",
+          "The peppermint tea is steeping. Fresh and calming.",
+          "You stir gently. So refreshing.",
+          "All done. Your friend is ready to rest. Good night."
+        ];
+        var messagesSet7 = [
+          "Today's request: homemade pizza. Take your time!",
+          "The dough is in the pan.",
+          "The sauce is spreading. Smells like a real kitchen.",
+          "Cheese on top. You did it!",
+          "All done. Your friend loved the pizza. Good night."
+        ];
+
+        function getMessages() {
+          if (currentRecipe === 1) return messagesSet1;
+          if (currentRecipe === 2) return messagesSet2;
+          if (currentRecipe === 3) return messagesSet3;
+          if (currentRecipe === 4) return messagesSet4;
+          if (currentRecipe === 5) return messagesSet5;
+          if (currentRecipe === 6) return messagesSet6;
+          return messagesSet7;
+        }
+
+        function isSpecialCustomerActive() {
+          var name = (typeof localStorage !== "undefined" && localStorage.getItem("cozyKitchenRestaurantName")) || "";
+          var n = (name + "").toLowerCase().replace(/'/g, " ").replace(/\s+/g, " ").trim();
+          return n.indexOf("nah i d win") !== -1 || n.indexOf("nah id win") !== -1;
+        }
+        function setVisibleAnimal(recipe) {
+          var all = document.querySelectorAll(".animal-wrap .animal");
+          all.forEach(function (el) { el.classList.remove("animal-visible"); });
+          if (isSpecialCustomerActive()) {
+            var special = document.getElementById("animalSpecial");
+            var specialImg = document.getElementById("animalSpecialImg");
+            if (special) special.classList.add("animal-visible");
+            if (specialImg) {
+              var base = window.location.href.replace(/[^/]*$/, "");
+              specialImg.src = base + "special-customer.png";
+            }
+            return;
+          }
+          var r = (recipe - 1) % 4 + 1;
+          var sel = ".animal-wrap .animal-bear";
+          if (r === 2) sel = ".animal-wrap .animal-rabbit";
+          if (r === 3) sel = ".animal-wrap .animal-turtle";
+          if (r === 4) sel = ".animal-wrap .animal-owl";
+          var el = document.querySelector(sel);
+          if (el) el.classList.add("animal-visible");
+        }
+
+        function setRecipePanel(recipe) {
+          document.querySelectorAll(".recipe-script-body .recipe-book").forEach(function (el) { el.classList.remove("current-recipe"); });
+          var panel = document.getElementById("recipeBook" + recipe);
+          if (panel) panel.classList.add("current-recipe");
+        }
+
+        function applyReset(recipeNum) {
+          step = 0;
+          heldIngredient = null;
+          updatePlayerPositionUI();
+          document.body.classList.remove("sleepy");
+          document.querySelectorAll(".animal-wrap .animal-head").forEach(function (h) { h.classList.remove("sleepy"); h.classList.remove("happy"); });
+          var aw = document.getElementById("animalWrap");
+          if (aw) aw.classList.remove("walking-away");
+          document.querySelectorAll(".ingredient-card.added").forEach(function (el) { el.classList.remove("added"); });
+          document.querySelectorAll("#recipeSteps li.done, #recipeSteps2 li.done, #recipeSteps3 li.done, #recipeSteps4 li.done, #recipeSteps5 li.done, #recipeSteps6 li.done, #recipeSteps7 li.done").forEach(function (el) { el.classList.remove("done"); });
+          var relaxFill = document.getElementById("relaxFill");
+          var potLiquid = document.getElementById("potLiquid");
+          var messageEl = document.getElementById("message");
+          if (relaxFill) relaxFill.style.width = "0%";
+          if (potLiquid) potLiquid.style.background = "#f4d8a8";
+          currentRecipe = recipeNum;
+          var gameEl = document.querySelector(".game");
+          if (gameEl) {
+            if (recipeNum === 7) gameEl.classList.add("pizza-recipe"); else gameEl.classList.remove("pizza-recipe");
+            if (recipeNum === 3) gameEl.classList.add("oatmeal-recipe"); else gameEl.classList.remove("oatmeal-recipe");
+          }
+          var pizzaSurface = document.getElementById("pizzaSurface");
+          if (pizzaSurface) pizzaSurface.classList.remove("has-sauce", "has-cheese");
+          var oatmealContent = document.getElementById("oatmealBowlContent");
+          if (oatmealContent) oatmealContent.classList.remove("has-oats", "has-stirred");
+          setVisibleAnimal(currentRecipe);
+          setRecipePanel(currentRecipe);
+          if (messageEl) messageEl.textContent = getMessages()[0];
+          document.getElementById("nextRecipeBtn").style.display = "none";
+          document.getElementById("recipePicker").classList.remove("open");
+          var card0 = document.querySelector(".ingredient-card[data-step='0'] .ingredient-label");
+          var card1 = document.querySelector(".ingredient-card[data-step='1'] .ingredient-label");
+          var card2 = document.querySelector(".ingredient-card[data-step='2'] .ingredient-label");
+          if (card0) {
+            if (currentRecipe === 1 || currentRecipe === 3 || currentRecipe === 5) card0.textContent = "Pour warm milk";
+            if (currentRecipe === 2 || currentRecipe === 6) card0.textContent = "Pour hot water";
+            if (currentRecipe === 4) card0.textContent = "Pour broth";
+            if (currentRecipe === 7) card0.textContent = "Roll dough";
+          }
+          if (card1) {
+            if (currentRecipe === 1) card1.textContent = "Add honey";
+            if (currentRecipe === 2) card1.textContent = "Add chamomile tea";
+            if (currentRecipe === 3) card1.textContent = "Add oats";
+            if (currentRecipe === 4) card1.textContent = "Add herbs";
+            if (currentRecipe === 5) card1.textContent = "Add cocoa";
+            if (currentRecipe === 6) card1.textContent = "Add peppermint tea";
+            if (currentRecipe === 7) card1.textContent = "Spread sauce";
+          }
+          if (card2) {
+            if (currentRecipe === 7) card2.textContent = "Add cheese";
+            else card2.textContent = "Stir slowly";
+          }
+        }
+
+        function resetForNextRecipe() {
+          currentRecipe = currentRecipe >= 7 ? 1 : currentRecipe + 1;
+          applyReset(currentRecipe);
+        }
+
+        document.getElementById("nextRecipeBtn").addEventListener("click", function () {
+          document.getElementById("nextRecipeBtn").style.display = "none";
+          var picker = document.getElementById("recipePicker");
+          picker.classList.add("open");
+          setTimeout(function () { picker.scrollIntoView({ behavior: "smooth", block: "nearest" }); }, 50);
+        });
+
+        document.querySelectorAll(".recipe-picker-btn").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var recipe = parseInt(btn.getAttribute("data-recipe"), 10);
+            if (recipe === 0) resetForNextRecipe();
+            else applyReset(recipe);
+            document.getElementById("recipePicker").classList.remove("open");
+            document.getElementById("recipeBookPanel").classList.remove("open");
+          });
+        });
+
+        document.querySelectorAll(".make-this-btn").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var recipe = parseInt(btn.getAttribute("data-recipe"), 10);
+            applyReset(recipe);
+            document.getElementById("recipeBookPanel").classList.remove("open");
+          });
+        });
+
+        let step = 0;
+        const messageEl = document.getElementById("message");
+        const cards = document.querySelectorAll(".ingredient-card[data-step]");
+        const relaxFill = document.getElementById("relaxFill");
+        const potLiquid = document.getElementById("potLiquid");
+        const pourStream = document.getElementById("pourStream");
+        const pot = document.querySelector(".pot");
+        let draggedCard = null;
+        let playerAt = "table";
+        let heldIngredient = null;
+        var playerPositionSpot = document.getElementById("playerPositionSpot");
+        var playerPositionLabel = document.getElementById("playerPositionLabel");
+        var playerHoldingWrap = document.getElementById("playerHoldingWrap");
+        var playerHoldingName = document.getElementById("playerHoldingName");
+        function updatePlayerPositionUI() {
+          if (playerPositionSpot) {
+            playerPositionSpot.classList.remove("at-cupboard", "at-table");
+            playerPositionSpot.classList.add(playerAt === "cupboard" ? "at-cupboard" : "at-table");
+          }
+          if (playerPositionLabel) playerPositionLabel.textContent = playerAt === "cupboard" ? "You are at the cupboard" : "You are at the table";
+          if (playerHoldingWrap && playerHoldingName) {
+            if (heldIngredient) {
+              var names = { milk: "Milk", water: "Water", honey: "Honey", cocoa: "Cocao", tea: "Tea", oats: "Oats", herbs: "Herbs", cheese: "Cheese" };
+              playerHoldingName.textContent = names[heldIngredient] || heldIngredient;
+              playerHoldingWrap.classList.add("visible");
+            } else {
+              playerHoldingWrap.classList.remove("visible");
+            }
+          }
+        }
+        document.addEventListener("keydown", function (e) {
+          var t = e.target;
+          if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+          if (e.key === "a" || e.key === "A" || e.key === "ArrowLeft") {
+            e.preventDefault();
+            playerAt = "cupboard";
+            updatePlayerPositionUI();
+          } else if (e.key === "d" || e.key === "D" || e.key === "ArrowRight") {
+            e.preventDefault();
+            playerAt = "table";
+            updatePlayerPositionUI();
+          }
+        });
+        updatePlayerPositionUI();
+
+        function showPour(color) {
+          if (!pourStream) return;
+          pourStream.style.background = color;
+          pourStream.classList.add("visible");
+          setTimeout(() => {
+            pourStream.classList.remove("visible");
+          }, 400);
+        }
+
+        function applyStep(cardStep, card) {
+          if (!card || card.classList.contains("added")) return;
+
+          if (cardStep === 0 && step === 0) {
+            step = 1;
+            card.classList.add("added");
+            if (currentRecipe === 1 || currentRecipe === 3 || currentRecipe === 5) {
+              potLiquid.style.background = "#f5f0e8";
+              showPour("rgba(248, 245, 238, 0.95)");
+            } else if (currentRecipe === 2 || currentRecipe === 6) {
+              potLiquid.style.background = "#faf4e8";
+              showPour("rgba(250, 244, 232, 0.95)");
+            } else if (currentRecipe === 4) {
+              potLiquid.style.background = "#f5e8d0";
+              showPour("rgba(240, 220, 180, 0.95)");
+            } else {
+              potLiquid.style.background = "#e0d0b0";
+              showPour("rgba(220, 200, 160, 0.95)");
+            }
+          } else if (cardStep === 1 && step === 1) {
+            step = 2;
+            card.classList.add("added");
+            if (currentRecipe === 1) {
+              potLiquid.style.background = "#e8c45a";
+              showPour("rgba(212, 160, 58, 0.9)");
+            } else if (currentRecipe === 2) {
+              potLiquid.style.background = "#e0d4a0";
+              showPour("rgba(200, 180, 100, 0.85)");
+            } else if (currentRecipe === 3) {
+              potLiquid.style.background = "#c8a878";
+              showPour("rgba(180, 140, 100, 0.9)");
+            } else if (currentRecipe === 4) {
+              potLiquid.style.background = "#b8c088";
+              showPour("rgba(160, 180, 120, 0.85)");
+            } else if (currentRecipe === 5) {
+              potLiquid.style.background = "#6a4830";
+              showPour("rgba(90, 60, 40, 0.9)");
+            } else if (currentRecipe === 6) {
+              potLiquid.style.background = "#b8d0a8";
+              showPour("rgba(160, 200, 140, 0.85)");
+            } else {
+              potLiquid.style.background = "#c05040";
+              showPour("rgba(180, 60, 50, 0.9)");
+            }
+            if (currentRecipe === 7) {
+              var ps = document.getElementById("pizzaSurface");
+              if (ps) ps.classList.add("has-sauce");
+            }
+            if (currentRecipe === 3) {
+              var ob = document.getElementById("oatmealBowlContent");
+              if (ob) ob.classList.add("has-oats");
+            }
+          } else if (cardStep === 2 && step === 2) {
+            step = 3;
+            card.classList.add("added");
+            if (currentRecipe === 1) potLiquid.style.background = "#e6bc5c";
+            else if (currentRecipe === 2) potLiquid.style.background = "#d8c890";
+            else if (currentRecipe === 3) potLiquid.style.background = "#c4a068";
+            else if (currentRecipe === 4) potLiquid.style.background = "#a89868";
+            else if (currentRecipe === 5) potLiquid.style.background = "#5a3828";
+            else if (currentRecipe === 6) potLiquid.style.background = "#a8c898";
+            else potLiquid.style.background = "#e8d8a0";
+            if (currentRecipe === 7) {
+              var ps2 = document.getElementById("pizzaSurface");
+              if (ps2) ps2.classList.add("has-cheese");
+            }
+            if (currentRecipe === 3) {
+              var ob2 = document.getElementById("oatmealBowlContent");
+              if (ob2) ob2.classList.add("has-stirred");
+            }
+          } else {
+            return;
+          }
+
+          messageEl.textContent = getMessages()[Math.min(step, getMessages().length - 1)];
+
+          const progress = Math.min(step / 3, 1);
+          relaxFill.style.width = progress * 100 + "%";
+
+          var stepsList = "recipeSteps";
+          if (currentRecipe === 2) stepsList = "recipeSteps2";
+          if (currentRecipe === 3) stepsList = "recipeSteps3";
+          if (currentRecipe === 4) stepsList = "recipeSteps4";
+          if (currentRecipe === 5) stepsList = "recipeSteps5";
+          if (currentRecipe === 6) stepsList = "recipeSteps6";
+          if (currentRecipe === 7) stepsList = "recipeSteps7";
+          var recipeStep = document.querySelector("#" + stepsList + " li[data-step=\"" + cardStep + "\"]");
+          if (recipeStep) recipeStep.classList.add("done");
+
+          var animalHead = document.querySelector(".animal-wrap .animal-visible .animal-head");
+          if (animalHead) {
+            if (step >= 1 && step <= 2) animalHead.classList.add("happy");
+            else animalHead.classList.remove("happy");
+          }
+          if (step >= 3) {
+            document.body.classList.add("sleepy");
+            var animalWrap = document.getElementById("animalWrap");
+            if (animalHead) animalHead.classList.add("sleepy");
+            if (animalWrap) {
+              setTimeout(function () {
+                animalWrap.classList.add("walking-away");
+                setTimeout(function () {
+                  var btn = document.getElementById("nextRecipeBtn");
+                  if (btn) btn.style.display = "block";
+                  document.getElementById("recipeBookPanel").classList.add("open");
+                }, 2300);
+              }, 1200);
+            }
+          }
+        }
+
+        // Transparent 1x1 drag image so the page doesn't jump when dragging
+        var dragImage = document.createElement("canvas");
+        dragImage.width = 1;
+        dragImage.height = 1;
+
+        cards.forEach((card) => {
+          const stepIndex = Number(card.dataset.step);
+          card.setAttribute("draggable", "true");
+
+          card.addEventListener("dragstart", (e) => {
+            draggedCard = card;
+            e.dataTransfer.effectAllowed = "move";
+            try {
+              e.dataTransfer.setDragImage(dragImage, 0, 0);
+            } catch (err) {}
+          });
+
+          card.addEventListener("dragend", () => {
+            draggedCard = null;
+          });
+
+          if (stepIndex === 0 || stepIndex === 1 || stepIndex === 2) {
+            card.addEventListener("click", () => {
+              if (currentRecipe === 7 && stepIndex === 0 && step === 0) {
+                openDoughMinigame(card);
+                return;
+              }
+              if (currentRecipe === 1 && stepIndex === 1 && step === 1) {
+                openHoneyMinigame(card);
+                return;
+              }
+              if ((currentRecipe === 2 || currentRecipe === 6) && stepIndex === 1 && step === 1) {
+                openTeaBagMinigame(card);
+                return;
+              }
+              if (currentRecipe === 7 && stepIndex === 1 && step === 1) {
+                openSauceMinigame(card);
+                return;
+              }
+              if (currentRecipe === 3 && stepIndex === 1 && step === 1) {
+                openOatmealMinigame(card);
+                return;
+              }
+              if (currentRecipe === 4 && stepIndex === 1 && step === 1) {
+                openHerbMinigame(card);
+                return;
+              }
+              if (currentRecipe === 5 && stepIndex === 1 && step === 1) {
+                openCocoaMinigame(card);
+                return;
+              }
+              if (currentRecipe === 7 && stepIndex === 2 && step === 2) {
+                openCheeseMinigame(card);
+                return;
+              }
+              applyStep(stepIndex, card);
+            });
+          }
+        });
+
+        var pendingPizzaCard = null;
+        var pendingPizzaStep = null;
+
+        function hideAllMinigameAreas() {
+          var ids = ["minigameDough", "minigameSauceArea", "minigameOatmealArea", "minigameHerbArea", "minigamePourArea", "minigameHoneyArea", "minigameTeaArea", "minigameCocoaArea", "minigameCheeseArea"];
+          ids.forEach(function (id) {
+            var el = document.getElementById(id);
+            if (el) el.style.display = "none";
+          });
+          var hintIds = ["minigameHerbHint", "minigamePourHint", "minigameHoneyHint", "minigameTeaHint", "minigameCocoaHint", "minigameCheeseHint"];
+          hintIds.forEach(function (id) {
+            var el = document.getElementById(id);
+            if (el) el.style.display = "none";
+          });
+        }
+
+        function openDoughMinigame(card) {
+          pendingPizzaCard = card;
+          pendingPizzaStep = 0;
+          var overlay = document.getElementById("minigameOverlay");
+          var title = document.getElementById("minigameTitle");
+          var doughEl = document.getElementById("minigameDough");
+          var doneBtn = document.getElementById("minigameDoneBtn");
+          hideAllMinigameAreas();
+          title.textContent = "Roll the dough — click to roll out!";
+          doughEl.style.display = "block";
+          doughEl.style.transform = "scale(0.35)";
+          doneBtn.classList.remove("show");
+          overlay.classList.add("open");
+          var clicks = 0;
+          var needClicks = 7;
+          doughEl.onclick = function () {
+            clicks++;
+            doughEl.style.transform = "scale(" + (0.35 + (clicks / needClicks) * 0.65) + ")";
+            if (clicks >= needClicks) {
+              doneBtn.classList.add("show");
+              doughEl.onclick = null;
+            }
+          };
+        }
+
+        function openSauceMinigame(card) {
+          pendingPizzaCard = card;
+          pendingPizzaStep = 1;
+          var overlay = document.getElementById("minigameOverlay");
+          var title = document.getElementById("minigameTitle");
+          var sauceArea = document.getElementById("minigameSauceArea");
+          var canvas = document.getElementById("minigameSauceCanvas");
+          var doneBtn = document.getElementById("minigameDoneBtn");
+          hideAllMinigameAreas();
+          title.textContent = "Spread the sauce";
+          sauceArea.style.display = "block";
+          doneBtn.classList.remove("show");
+          overlay.classList.add("open");
+          var ctx = canvas.getContext("2d");
+          var w = 200, h = 200;
+          var centerX = w / 2, centerY = h / 2, radius = 98;
+          ctx.clearRect(0, 0, w, h);
+          ctx.fillStyle = "#e0d0b0";
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = "#c4a878";
+          ctx.lineWidth = 2;
+          ctx.stroke();
+          var sauceColor = "#c05040";
+          var drawing = false;
+          var brush = 12;
+          function getPixelCount() {
+            var data = ctx.getImageData(0, 0, w, h);
+            var total = 0, sauce = 0;
+            for (var i = 0; i < data.data.length; i += 4) {
+              var x = (i / 4) % w, y = Math.floor((i / 4) / w);
+              var dx = x - centerX, dy = y - centerY;
+              if (dx * dx + dy * dy <= radius * radius) {
+                total++;
+                if (data.data[i] > 150 && data.data[i+1] < 120 && data.data[i+2] < 120) sauce++;
+              }
+            }
+            return total > 0 ? sauce / total : 0;
+          }
+          function drawAt(e) {
+            var rect = canvas.getBoundingClientRect();
+            var x = (e.clientX || e.touches[0].clientX) - rect.left;
+            var y = (e.clientY || e.touches[0].clientY) - rect.top;
+            ctx.fillStyle = sauceColor;
+            ctx.beginPath();
+            ctx.arc(x, y, brush, 0, Math.PI * 2);
+            ctx.fill();
+            if (getPixelCount() >= 0.5) doneBtn.classList.add("show");
+          }
+          canvas.onmousedown = function (e) { drawing = true; drawAt(e); };
+          canvas.onmousemove = function (e) { if (drawing) drawAt(e); };
+          canvas.onmouseup = canvas.onmouseleave = function () { drawing = false; };
+          canvas.ontouchstart = function (e) { e.preventDefault(); drawing = true; drawAt(e); };
+          canvas.ontouchmove = function (e) { e.preventDefault(); if (drawing) drawAt(e); };
+          canvas.ontouchend = function () { drawing = false; };
+        }
+
+        function openOatmealMinigame(card) {
+          pendingPizzaCard = card;
+          pendingPizzaStep = 1;
+          var overlay = document.getElementById("minigameOverlay");
+          var title = document.getElementById("minigameTitle");
+          var oatmealArea = document.getElementById("minigameOatmealArea");
+          var oatmealFill = document.getElementById("minigameOatmealFill");
+          var oatmealScoop = document.getElementById("minigameOatmealScoop");
+          var doneBtn = document.getElementById("minigameDoneBtn");
+          hideAllMinigameAreas();
+          title.textContent = "Put the oatmeal in the bowl";
+          oatmealArea.style.display = "block";
+          doneBtn.classList.remove("show");
+          oatmealFill.style.height = "0px";
+          overlay.classList.add("open");
+          var clicks = 0;
+          var needClicks = 6;
+          function addOats() {
+            clicks++;
+            oatmealFill.style.height = (clicks / needClicks * 44) + "px";
+            if (clicks >= needClicks) doneBtn.classList.add("show");
+          }
+          oatmealScoop.onclick = addOats;
+        }
+
+        function openHerbMinigame(card) {
+          pendingPizzaCard = card;
+          pendingPizzaStep = 1;
+          var overlay = document.getElementById("minigameOverlay");
+          var title = document.getElementById("minigameTitle");
+          var herbArea = document.getElementById("minigameHerbArea");
+          var herbPile = document.getElementById("minigameHerbPile");
+          var herbPot = document.getElementById("minigameHerbPot");
+          var herbPotInside = document.getElementById("minigameHerbPotInside");
+          var herbHint = document.getElementById("minigameHerbHint");
+          var doneBtn = document.getElementById("minigameDoneBtn");
+          hideAllMinigameAreas();
+          title.textContent = "Add herbs to the soup — drag them into the pot!";
+          herbArea.style.display = "flex";
+          if (herbHint) herbHint.style.display = "block";
+          doneBtn.classList.remove("show");
+          overlay.classList.add("open");
+          if (herbPotInside) herbPotInside.innerHTML = "";
+          var sprigs = herbPile ? herbPile.querySelectorAll(".minigame-herb-sprig") : [];
+          sprigs.forEach(function (s) {
+            s.classList.remove("used");
+            s.setAttribute("draggable", "true");
+          });
+          var count = 0;
+          var needCount = 5;
+          var herbDraggedSprig = null;
+          sprigs.forEach(function (sprig) {
+            sprig.ondragstart = function (e) {
+              if (sprig.classList.contains("used")) { e.preventDefault(); return; }
+              herbDraggedSprig = sprig;
+              e.dataTransfer.setData("text/plain", "minigame-herb");
+              e.dataTransfer.effectAllowed = "move";
+            };
+            sprig.ondragend = function () { herbDraggedSprig = null; };
+          });
+          if (herbPot) {
+            herbPot.addEventListener("dragover", function (e) {
+              e.preventDefault();
+              e.dataTransfer.dropEffect = "move";
+              herbPot.classList.add("drag-over");
+            });
+            herbPot.addEventListener("dragleave", function () { herbPot.classList.remove("drag-over"); });
+            herbPot.addEventListener("drop", function (e) {
+              e.preventDefault();
+              herbPot.classList.remove("drag-over");
+              if (e.dataTransfer.getData("text/plain") !== "minigame-herb" || count >= needCount) return;
+              if (herbDraggedSprig) herbDraggedSprig.classList.add("used");
+              count++;
+              if (herbPotInside) {
+                var dot = document.createElement("div");
+                dot.className = "minigame-herb-in-pot";
+                herbPotInside.appendChild(dot);
+              }
+              if (count >= needCount) doneBtn.classList.add("show");
+            });
+          }
+        }
+
+        function openPourMinigame(card, stepIndex, type) {
+          pendingPizzaCard = card;
+          pendingPizzaStep = stepIndex;
+          var overlay = document.getElementById("minigameOverlay");
+          var title = document.getElementById("minigameTitle");
+          var pourArea = document.getElementById("minigamePourArea");
+          var bottle = document.getElementById("minigamePourBottle");
+          var fill = document.getElementById("minigamePourFill");
+          var hint = document.getElementById("minigamePourHint");
+          var doneBtn = document.getElementById("minigameDoneBtn");
+          hideAllMinigameAreas();
+          var labels = { milk: "Pour milk into the mug!", water: "Pour water into the mug!", broth: "Pour broth into the pot!" };
+          title.textContent = labels[type] || "Pour into the mug!";
+          if (bottle) { bottle.className = "minigame-pour-bottle " + type; }
+          if (fill) { fill.className = "minigame-pour-fill " + type; fill.style.height = "0px"; }
+          pourArea.style.display = "flex";
+          if (hint) hint.style.display = "block";
+          doneBtn.classList.remove("show");
+          overlay.classList.add("open");
+          var clicks = 0, need = 6;
+          if (bottle) bottle.onclick = function () {
+            clicks++;
+            if (fill) fill.style.height = (clicks / need * 36) + "px";
+            if (clicks >= need) doneBtn.classList.add("show");
+          };
+        }
+
+        function openHoneyMinigame(card) {
+          pendingPizzaCard = card;
+          pendingPizzaStep = 1;
+          var overlay = document.getElementById("minigameOverlay");
+          var title = document.getElementById("minigameTitle");
+          var honeyArea = document.getElementById("minigameHoneyArea");
+          var honeyJar = document.getElementById("minigameHoneyJar");
+          var drips = document.getElementById("minigameHoneyDrips");
+          var hint = document.getElementById("minigameHoneyHint");
+          var doneBtn = document.getElementById("minigameDoneBtn");
+          hideAllMinigameAreas();
+          title.textContent = "Add honey to the milk!";
+          if (drips) drips.style.height = "0px";
+          honeyArea.style.display = "flex";
+          if (hint) hint.style.display = "block";
+          doneBtn.classList.remove("show");
+          overlay.classList.add("open");
+          var clicks = 0, need = 5;
+          if (honeyJar) honeyJar.onclick = function () {
+            clicks++;
+            if (drips) drips.style.height = (clicks / need * 32) + "px";
+            if (clicks >= need) doneBtn.classList.add("show");
+          };
+        }
+
+        function openTeaBagMinigame(card) {
+          pendingPizzaCard = card;
+          pendingPizzaStep = 1;
+          var overlay = document.getElementById("minigameOverlay");
+          var title = document.getElementById("minigameTitle");
+          var teaArea = document.getElementById("minigameTeaArea");
+          var teaBag = document.getElementById("minigameTeaBag");
+          var teaMug = document.getElementById("minigameTeaMug");
+          var hint = document.getElementById("minigameTeaHint");
+          var doneBtn = document.getElementById("minigameDoneBtn");
+          hideAllMinigameAreas();
+          title.textContent = "Dip the tea bag in the mug!";
+          teaArea.style.display = "flex";
+          if (hint) hint.style.display = "block";
+          doneBtn.classList.remove("show");
+          overlay.classList.add("open");
+          var teaInMug = false, dips = 0, needDips = 3;
+          if (teaBag) {
+            teaBag.style.opacity = "1";
+            teaBag.ondragstart = function (e) {
+              e.dataTransfer.setData("text/plain", "tea-bag");
+              e.dataTransfer.effectAllowed = "move";
+            };
+          }
+          if (teaMug) {
+            teaMug.ondragover = function (e) { e.preventDefault(); e.dataTransfer.dropEffect = "move"; teaMug.classList.add("drag-over"); };
+            teaMug.ondragleave = function () { teaMug.classList.remove("drag-over"); };
+            teaMug.ondrop = function (e) {
+              e.preventDefault();
+              teaMug.classList.remove("drag-over");
+              if (e.dataTransfer.getData("text/plain") !== "tea-bag") return;
+              teaInMug = true;
+              if (teaBag) teaBag.style.opacity = "0.4";
+              teaMug.onclick = function () {
+                if (!teaInMug) return;
+                dips++;
+                if (dips >= needDips) doneBtn.classList.add("show");
+              };
+            };
+          }
+        }
+
+        function openCocoaMinigame(card) {
+          pendingPizzaCard = card;
+          pendingPizzaStep = 1;
+          var overlay = document.getElementById("minigameOverlay");
+          var title = document.getElementById("minigameTitle");
+          var cocoaArea = document.getElementById("minigameCocoaArea");
+          var cocoaTin = document.getElementById("minigameCocoaTin");
+          var cocoaFill = document.getElementById("minigameCocoaFill");
+          var hint = document.getElementById("minigameCocoaHint");
+          var doneBtn = document.getElementById("minigameDoneBtn");
+          hideAllMinigameAreas();
+          title.textContent = "Add cocoa to the milk!";
+          if (cocoaFill) cocoaFill.style.height = "0px";
+          cocoaArea.style.display = "flex";
+          if (hint) hint.style.display = "block";
+          doneBtn.classList.remove("show");
+          overlay.classList.add("open");
+          var clicks = 0, need = 6;
+          if (cocoaTin) cocoaTin.onclick = function () {
+            clicks++;
+            if (cocoaFill) cocoaFill.style.height = (clicks / need * 30) + "px";
+            if (clicks >= need) doneBtn.classList.add("show");
+          };
+        }
+
+        function openCheeseMinigame(card) {
+          pendingPizzaCard = card;
+          pendingPizzaStep = 2;
+          var overlay = document.getElementById("minigameOverlay");
+          var title = document.getElementById("minigameTitle");
+          var cheeseArea = document.getElementById("minigameCheeseArea");
+          var cheesePile = document.getElementById("minigameCheesePile");
+          var cheesePan = document.getElementById("minigameCheesePan");
+          var hint = document.getElementById("minigameCheeseHint");
+          var doneBtn = document.getElementById("minigameDoneBtn");
+          hideAllMinigameAreas();
+          title.textContent = "Add cheese on top of the pizza!";
+          cheeseArea.style.display = "flex";
+          if (hint) hint.style.display = "block";
+          doneBtn.classList.remove("show");
+          overlay.classList.add("open");
+          var wedges = cheesePile ? cheesePile.querySelectorAll(".minigame-cheese-wedge") : [];
+          var count = 0, need = 4, cheeseDraggedWedge = null;
+          wedges.forEach(function (w) {
+            w.style.opacity = "1";
+            w.setAttribute("draggable", "true");
+            w.ondragstart = function (e) {
+              cheeseDraggedWedge = w;
+              e.dataTransfer.setData("text/plain", "cheese");
+              e.dataTransfer.effectAllowed = "move";
+            };
+            w.ondragend = function () { cheeseDraggedWedge = null; };
+          });
+          if (cheesePan) {
+            cheesePan.ondragover = function (e) { e.preventDefault(); e.dataTransfer.dropEffect = "move"; cheesePan.classList.add("drag-over"); };
+            cheesePan.ondragleave = function () { cheesePan.classList.remove("drag-over"); };
+            cheesePan.ondrop = function (e) {
+              e.preventDefault();
+              cheesePan.classList.remove("drag-over");
+              if (e.dataTransfer.getData("text/plain") !== "cheese") return;
+              if (cheeseDraggedWedge) cheeseDraggedWedge.style.opacity = "0.3";
+              count++;
+              if (count >= need) doneBtn.classList.add("show");
+            };
+          }
+        }
+
+        document.getElementById("minigameDoneBtn").addEventListener("click", function () {
+          document.getElementById("minigameOverlay").classList.remove("open");
+          if (pendingPizzaCard !== null) {
+            applyStep(pendingPizzaStep, pendingPizzaCard);
+            pendingPizzaCard = null;
+            pendingPizzaStep = null;
+          }
+        });
+
+        function getCookingTarget() {
+          if (currentRecipe === 7) return document.getElementById("pizzaPanWrap");
+          if (currentRecipe === 3) return document.getElementById("oatmealBowlWrap");
+          return pot;
+        }
+
+        pot.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = "move";
+        });
+        var pizzaPanWrap = document.getElementById("pizzaPanWrap");
+        if (pizzaPanWrap) {
+          pizzaPanWrap.addEventListener("dragover", (e) => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; });
+          pizzaPanWrap.addEventListener("drop", onCookingDrop);
+        }
+        var oatmealBowlWrap = document.getElementById("oatmealBowlWrap");
+        if (oatmealBowlWrap) {
+          oatmealBowlWrap.addEventListener("dragover", (e) => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; });
+          oatmealBowlWrap.addEventListener("drop", onCookingDrop);
+          oatmealBowlWrap.addEventListener("mousemove", onPotMouseMove);
+          oatmealBowlWrap.addEventListener("mouseleave", onPotMouseLeave);
+          oatmealBowlWrap.addEventListener("click", onCookingClick);
+        }
+        function onCookingDrop(e) {
+          e.preventDefault();
+          var data = e.dataTransfer.getData("text/plain") || "";
+          if (data === "spoon") {
+            if (step === 2) {
+              spoonPickedUp = false;
+              var stirCard = document.querySelector('.ingredient-card[data-step="2"]');
+              applyStep(2, stirCard);
+            }
+            return;
+          }
+          if (!draggedCard) return;
+          var stepIndex = Number(draggedCard.dataset.step);
+          if (stepIndex === 0 || stepIndex === 1) applyStep(stepIndex, draggedCard);
+        }
+        function ingredientToStep(ingredient) {
+          if (!ingredient) return null;
+          if (ingredient === "milk" && step === 0 && (currentRecipe === 1 || currentRecipe === 3 || currentRecipe === 5)) return 0;
+          if (ingredient === "water" && step === 0 && (currentRecipe === 2 || currentRecipe === 4 || currentRecipe === 6)) return 0;
+          if (ingredient === "honey" && step === 1 && currentRecipe === 1) return 1;
+          if (ingredient === "tea" && step === 1 && (currentRecipe === 2 || currentRecipe === 6)) return 1;
+          if (ingredient === "oats" && step === 1 && currentRecipe === 3) return 1;
+          if (ingredient === "herbs" && step === 1 && currentRecipe === 4) return 1;
+          if (ingredient === "cocoa" && step === 1 && currentRecipe === 5) return 1;
+          if (ingredient === "cheese" && step === 2 && currentRecipe === 7) return 2;
+          return null;
+        }
+        pot.addEventListener("drop", onCookingDrop);
+
+        document.querySelectorAll(".bg-cupboard-item-wrap").forEach(function (wrap) {
+          var ing = wrap.getAttribute("data-ingredient");
+          if (!ing) return;
+          wrap.addEventListener("click", function () {
+            if (playerAt !== "cupboard") return;
+            heldIngredient = ing;
+            updatePlayerPositionUI();
+          });
+        });
+
+        var tableSpoon = document.getElementById("tableSpoon");
+        var spoonPickedUp = false;
+        if (tableSpoon) {
+          tableSpoon.addEventListener("dragstart", (e) => {
+            e.dataTransfer.setData("text/plain", "spoon");
+            e.dataTransfer.effectAllowed = "move";
+          });
+          tableSpoon.addEventListener("click", () => {
+            if (step === 2) spoonPickedUp = true;
+          });
+        }
+
+        // Stir by moving mouse in a circle over the mug (or click as fallback)
+        var stirAngle0 = null;
+        var stirTotalAngle = 0;
+        var stirRadius = 40;
+
+        function potCenter() {
+          var t = getCookingTarget();
+          if (!t) return { x: 0, y: 0 };
+          var r = t.getBoundingClientRect();
+          return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+        }
+
+        function onPotMouseMove(e) {
+          if (step !== 2) return;
+          var c = potCenter();
+          var dx = e.clientX - c.x;
+          var dy = e.clientY - c.y;
+          var angle = Math.atan2(dy, dx);
+          if (stirAngle0 == null) stirAngle0 = angle;
+          var delta = angle - stirAngle0;
+          if (delta > Math.PI) delta -= 2 * Math.PI;
+          if (delta < -Math.PI) delta += 2 * Math.PI;
+          stirTotalAngle += delta;
+          stirAngle0 = angle;
+          if (stirTotalAngle >= Math.PI * 2) {
+            stirTotalAngle = 0;
+            stirAngle0 = null;
+            var stirCard = document.querySelector('.ingredient-card[data-step="2"]');
+            applyStep(2, stirCard);
+          }
+        }
+
+        function onPotMouseLeave() {
+          stirAngle0 = null;
+        }
+
+        pot.addEventListener("mousemove", onPotMouseMove);
+        pot.addEventListener("mouseleave", onPotMouseLeave);
+        if (pizzaPanWrap) {
+          pizzaPanWrap.addEventListener("mousemove", onPotMouseMove);
+          pizzaPanWrap.addEventListener("mouseleave", onPotMouseLeave);
+          pizzaPanWrap.addEventListener("click", onCookingClick);
+        }
+        function onCookingClick() {
+          if (playerAt === "table" && heldIngredient) {
+            var ingredientStep = ingredientToStep(heldIngredient);
+            if (ingredientStep !== null) {
+              var card = document.querySelector('.ingredient-card[data-step="' + ingredientStep + '"]');
+              if (card) applyStep(ingredientStep, card);
+              heldIngredient = null;
+              updatePlayerPositionUI();
+            }
+            return;
+          }
+          if (step !== 2) return;
+          spoonPickedUp = false;
+          var stirCard = document.querySelector('.ingredient-card[data-step="2"]');
+          applyStep(2, stirCard);
+        }
+        pot.addEventListener("click", onCookingClick);
+        if (document.getElementById("restaurantNameOverlay") && document.getElementById("restaurantNameOverlay").classList.contains("hidden")) setVisibleAnimal(currentRecipe);
+      </script>
+    </body>
+    </html>
