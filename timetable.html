@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FocusFrog - Healthy Timetable</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <h1 class="brand-title"><span class="brand-icon" aria-hidden="true">🐸</span> Healthy Timetable</h1>
+      <div class="topbar-actions">
+        <a href="./index.html" class="ghost ghost-link">Back to FocusFrog</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="card">
+        <h2>Build your day</h2>
+        <p class="muted">Pick a starter plan, then add only activities. We place them in order automatically.</p>
+        <div class="timetable-actions">
+          <button id="balancedPlanBtn" type="button" class="timetable-action-btn">Balanced day</button>
+          <button id="studyPlanBtn" type="button" class="timetable-action-btn">Study-heavy day</button>
+          <button id="resetPlanBtn" type="button" class="timetable-action-btn">Recovery day</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>Your timetable</h3>
+        <div id="timetableGrid" class="timetable-grid"></div>
+        <p class="muted lesson-picker-label">Quick suggestions (tap to fill)</p>
+        <div id="activitySuggestionRow" class="lesson-chip-row lesson-chip-row--wrap" aria-label="Activity suggestions"></div>
+        <form id="addRowForm" class="form-grid">
+          <label>
+            Activity
+            <input id="activityInput" type="text" placeholder="e.g. Breakfast without phone" required />
+          </label>
+          <button type="submit">Add block</button>
+        </form>
+      </section>
+    </main>
+
+    <script src="./timetable.js"></script>
+  </body>
+</html>
